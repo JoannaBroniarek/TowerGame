@@ -1,5 +1,5 @@
-from towers import *
 from mapp import *
+from towers import *
 from rivals import *
 from simulation import *
 import sys
@@ -18,26 +18,15 @@ mapa.create_path()
 mapa.create_wall()
 print mapa
 
-'''
+Player()
 #BUILDING PHASE
-print "This is a Building Phase. You can build your towers on the map"
-tower  = raw_input("Please, choose a type of tower: ")
-column = raw_input("The column number: ")
-row = raw_input("The row number: ")
-'''
-for i in dir(BuildingPhase):
-    print(i)
+BF = BuildingPhase()
+BF.start()
+BF.set_tower(mapa)
+print mapa
 
-
-
-#A=BuildingPhase()
-#a.start
-#BuildingPhase.set_tower(mapa)
-
-
-t = TowerFactory.create("F", 3, 4, mapa)
-p = RivalFactory.create("paratrooper", mapa)
-
+i = Interface()
+i.show(mapa)
 
 '''Simulation: (Fighting phase)
 

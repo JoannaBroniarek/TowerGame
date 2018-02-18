@@ -1,24 +1,5 @@
 from abc import ABCMeta , abstractmethod
-
-class BuildingPhase(object):
-    @classmethod
-    def set_tower(cls, map_):
-        tower  = raw_input("Please, choose a type of tower: ")
-        column = int(raw_input("The column number: "))
-        row = int(raw_input("The row number: "))
-        field = map_.get_wall_field(column, row)
-        field.add_content(tower)
-        #usun kredyty
-        # ustawiamy tylko na murach! <- try/except
-        return None
-
-    @classmethod
-    def update_credits22(cls):
-        pass
-
-    @classmethod
-    def update_credits111(cls):
-        pass
+from mapp import *
 
 class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! ok
     #@abstractmethod
@@ -43,6 +24,7 @@ class Fortress(Tower):
         self.effect = None
         self.board = map_
         self.sign = "F"
+        self.value = 4
 
     def produce_effect(self):
         pass
@@ -56,6 +38,7 @@ class Alkazar(Tower):
         self.effect = None
         self.board = map_
         self.sign = "A"
+        self.value = 4
 
 class ArcherTower(Tower): # change the reach
     def __init__(self, x, y, map_):
@@ -66,6 +49,7 @@ class ArcherTower(Tower): # change the reach
         self.effect = None
         self.board = map_
         self.sign = "R"
+        self.value = 4
 
 class MagicTower(Tower): #change the reach
     def __init__(self, x, y, map_):
@@ -76,9 +60,33 @@ class MagicTower(Tower): #change the reach
         self.effect = None
         self.board = map_
         self.sign = "M"
+        self.value = 4
 
 class TowerFactory(object):
     towers = {"F":Fortress, "A":Alkazar, "R":ArcherTower, "M":MagicTower}
     @classmethod
     def create(cls, type_, x, y, map_):
         return cls.towers[type_](x, y, map_)
+
+class BuildingPhase(object):
+    @classmethod
+    def set_tower(cls, map_):
+        towertype  = raw_input("Please, choose a type of tower: ")
+        column = int(raw_input("The column number: ")) - 1 
+        row = int(raw_input("The row number: "))
+        scaledrow = row*2 + 1
+        field = map_.get_wall_field(column, scaledrow)
+        tower = TowerFactory.create(towertype, column, scaledrow, map_)
+        field.add_content(tower)
+        Player.add_tower(tower)
+        Player.delete_credits(tower.value)
+        # ustawiamy tylko na murach! <- try/except
+        return
+
+    @classmethod
+    def update_credits(cls):
+        pass
+
+    @classmethod
+    def start(cls):
+        print "This is a Building Phase. You can build your towers on the map"

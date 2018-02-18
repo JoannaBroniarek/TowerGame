@@ -4,9 +4,9 @@ Created on Wed Jan 24 11:26:59 2018
 
 @author: Asia
 """
-from faza_natarcia import *
+from simulation import *
 from operator import attrgetter
-
+from math import ceil
 
 class Field(object):
     def __init__(self, x, y, sign, map_):
@@ -32,22 +32,6 @@ class Map(object):
     def __init__(self):
         self.width = 44
         self.length = 16
-        '''
-        self.path_fields = [Field(x, y, ".", self) \
-                           for x in range(0,self.width) \
-                           for y in range(0, self.length + 1, 2)] \
-                           + [Field(0, y, ".", self) \
-                           for y in range(3, self.length, 4)] \
-                           + [Field(self.width, y, ".", self) \
-                           for y in range(1, self.length, 4)]
-        self.wall_fields = [Field(x, y, "#", self) \
-                       for x in range(1, self.width - 1) \
-                       for y in range(1, self.length + 1, 2)] \
-                       + [Field(self.width, y, "#", self) \
-                       for y in range(3, self.length + 1, 4)] \
-                       + [Field(0, y, "#", self) \
-                       for y in range(1, self.length + 1, 4)] \
-        '''
         self.rivals_on_board = []
 
 
@@ -98,12 +82,48 @@ class Map(object):
         pass
 
     def __str__(self):
-        result = "_" * self.width + "\n"
+        result = "  0"
+        for j in range(10, int(ceil(self.width)), 10):
+            result += " "*8 + str(j)
+        result += "    \n  " + "_" * self.width + " \n |"
         self.fields = sorted(self.path + self.wall, key=attrgetter('y', 'x'))
+        k = 0
         for i in self.fields:
             if self.fields.index(i) % self.width == 0 and self.fields.index(i) != 0:
                 result += "|\n"
-                result += "|"
+                if i.y%2!=0:
+                    result += str(k) + "|"
+                    k+=1
+                else:
+                    result += " |"
             result += str(i)
-        result += "|\n" + "_" * self.width + "|\n"
+        result += "|\n |" + "_" * self.width + "|\n"
         return result
+
+class Player(object):
+    credits = 50
+    towers = []
+
+    @classmethod
+    def add_credits(cls, value):
+        cls.credits += value
+
+    @classmethod
+    def delete_credits(cls, value):
+        cls.credits -= value
+
+    @classmethod
+    def add_tower(cls, tower):
+        cls.towers.append(tower)
+
+class Interface(object):
+
+    @classmethod
+    def show(cls, map_):
+        s = str(map_)
+        lines = s.split('\n')
+        #map_lines = [s[i:i+47] for i in range(0, len(s), 47)]
+        print lines
+        #for i in map_lines:
+        #    print i
+        #    print
