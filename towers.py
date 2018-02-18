@@ -6,15 +6,19 @@ from mapp import *
 # tower.shoot
 
 class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! ok
-    #@abstractmethod
-    def notify(self, rival): #kazda wieza obseruje pola w swoim zasiegu
-        pass
-
+    def observe_fields(self):
+        for parameters in self.reach:
+            self.board.get_field(parameters[0], parameters[1], "path").add_observer(self)
     #@abstractmethod
     def shoot(self, rival):
-        if self.air and rival.is_airly:
-            rival.shot()
-            #rival.have_effect(self)
+        pass
+        #rival.have_effect(self)
+
+    #@abstractmethod
+    def notify(self, rival): #kazda wieza obseruje pola w swoim zasiegu
+        if self.airlyreach == rival.airly:
+            self.shoot()
+
     #@abstractmethod
     def __str__(self):
         return self.sign
@@ -24,7 +28,7 @@ class Fortress(Tower):
         self.name = "Fortress"
         self.parameters = (x,y)
         self.time = 1
-        self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
+        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
         self.airlyreach = False
         self.effect = None
         self.board = map_
@@ -39,7 +43,7 @@ class Alkazar(Tower):
         self.name = "Alkazar"
         self.parameters = (x,y)
         self.time = 2
-        self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
+        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
         self.airlyreach = False
         self.effect = None
         self.board = map_
@@ -51,7 +55,7 @@ class ArcherTower(Tower): # change the reach
         self.name = "Archer Tower"
         self.parameters = (x,y)
         self.time = 3
-        self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
+        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
         self.airlyreach = True
         self.effect = None
         self.board = map_
@@ -63,7 +67,7 @@ class MagicTower(Tower): #change the reach
         self.name = "Magic Tower"
         self.parameters = (x,y)
         self.time = 3
-        self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
+        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
         self.airlyreach = True
         self.effect = None
         self.board = map_
@@ -84,14 +88,15 @@ class BuildingPhase(object):
         column = int(raw_input("The column number: ")) - 1
         row = int(raw_input("The row number: "))
         scaledrow = row*2 + 1
-        field = map_.get_wall_field(column, scaledrow)
+        field = map_.get_field(column, scaledrow, "wall")
         try:
             tower = TowerFactory.create(towertype, column, scaledrow, map_)
             Player.delete_credits(tower.value)
             field.add_content(tower)
+            tower.observe_fields()
             Player.add_tower(tower)
         except Exception as e:
-            print e
+            print "\n\n\nError!!!!!\n\n\n", e
             # ustawiamy tylko na murach! <- try/except
 
     @classmethod

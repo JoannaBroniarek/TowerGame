@@ -16,6 +16,7 @@ class Field(object):
         self.x = x
         self.y = y
         self.map = map_
+        self.observers = []
 
     def __str__(self):
         if self.content:
@@ -24,9 +25,17 @@ class Field(object):
 
     def add_content(self, content):
         self.content = content
+        if len(self.observers)!=0:
+            map(lambda x: self.notify(x), self.observers)
 
     def remove_content(self):
         self.content = None
+
+    def add_observer(self, observer):
+        self.observers.append(observer)
+
+    def notify(self, observer):
+        observer.notify(self.content)
 
 class Map(object):
     def __init__(self):
@@ -61,9 +70,10 @@ class Map(object):
                 self.wall_indexes.append((x,y))
         self.wall = [Field(x, y, "#", self) for (x,y) in self.wall_indexes]
 
-    def get_wall_field(self, x, y): #get an appropriate field from the wall fields
+    def get_field(self, x, y, where): #get an appropriate field from the wall fields
+        d = {"path" : self.path, "wall" : self.wall}
         try:
-            for field in self.wall:
+            for field in d[where]:
                 if field.y == y and field.x == x:
                     return field
         except ValueError:
