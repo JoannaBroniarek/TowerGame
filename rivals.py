@@ -1,4 +1,5 @@
 from mapp import *
+from random import *
 import sys
 
 class Rival(object):
@@ -68,3 +69,26 @@ class RivalFactory(object):
     @classmethod
     def create(cls, type_, map_):
         return cls.rivals[type_](map_)
+
+
+class RivalWave(object):
+    airly = ["paratrooper", "dragon"]
+    groundbased = ["knight", "viking", "speeder"]
+    counter = 0
+
+    @classmethod
+    def create(cls, map_):
+        wave = []
+        if cls.counter < 2:
+            for i in range(1, randint(2,3)):
+                wave.append(RivalFactory.create(choice(cls.airly + cls.groundbased), map_))
+        elif cls.counter == 2 or cls.counter == 3:
+            wave.append(RivalFactory.create(choice(cls.airly), map_))
+            for i in range(3, randint(3, 5)):
+                wave.append(RivalFactory.create(choice(cls.groundbased), map_))
+        else:
+            for i in range(2, randint(3, 6)):
+                wave.append(RivalFactory.create(choice(cls.airly), map_))
+                wave.append(RivalFactory.create(choice(cls.groundbased), map_))
+        cls.counter+=1
+        return wave

@@ -31,8 +31,7 @@ if __name__ == '__main__':
             BF.set_tower(mapa)
             i.show(mapa, player)
         elif n == "B":
-            break
-
+            print RivalWave.create(mapa)
 
 
 '''Simulation: (Fighting phase)
