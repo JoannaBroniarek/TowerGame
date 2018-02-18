@@ -7,6 +7,7 @@ Created on Wed Jan 24 11:26:59 2018
 from simulation import *
 from operator import attrgetter
 from math import ceil
+from itertools import izip_longest
 
 class Field(object):
     def __init__(self, x, y, sign, map_):
@@ -85,7 +86,7 @@ class Map(object):
         result = "  0"
         for j in range(10, int(ceil(self.width)), 10):
             result += " "*8 + str(j)
-        result += "    \n  " + "_" * self.width + " \n |"
+        result += "   |\n  " + "_" * self.width + "|\n |"
         self.fields = sorted(self.path + self.wall, key=attrgetter('y', 'x'))
         k = 0
         for i in self.fields:
@@ -97,7 +98,7 @@ class Map(object):
                 else:
                     result += " |"
             result += str(i)
-        result += "|\n |" + "_" * self.width + "|\n"
+        result += "|\n |" + "_" * self.width + "|"
         return result
 
 class Player(object):
@@ -117,13 +118,20 @@ class Player(object):
         cls.towers.append(tower)
 
 class Interface(object):
-
     @classmethod
-    def show(cls, map_):
+    def show(cls, map_, player):
         s = str(map_)
         lines = s.split('\n')
-        #map_lines = [s[i:i+47] for i in range(0, len(s), 47)]
-        print lines
-        #for i in map_lines:
-        #    print i
-        #    print
+        data_credits = player.credits
+        data_towers = player.towers
+        data_nextwave = [] # fill it!
+        data = []
+        data.append("$: " + str(data_credits))
+        data.append("Waves remining: ")
+        data.append("~" * 15)
+        data.extend([i.name + ": " + str(i.parameters) for i in data_towers])
+        data.append("~" * 15)
+        data.append("Next wave:")
+
+        result = "\n".join(['{} {}'.format(b, a) for b, a in izip_longest(lines,data)])
+        print result + "\n B -> Start Battle      Q -> Quit."

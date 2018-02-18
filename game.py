@@ -4,29 +4,37 @@ from rivals import *
 from simulation import *
 import sys
 import time
-'''
+
 if __name__ == '__main__':
     print '\n' * 10
     print ("Welome to Tower Game\n\n" +
            "To make a play, type the relevent number and hit enter\n\n" +
            "Have fun ;)\n\n")
     raw_input(".... (hit enter) ...")
-'''
-# create and show an empty map
-mapa = Map()
-mapa.create_path()
-mapa.create_wall()
-print mapa
 
-Player()
-#BUILDING PHASE
-BF = BuildingPhase()
-BF.start()
-BF.set_tower(mapa)
-print mapa
+    game_active = True
+    player = Player()
+    mapa = Map()
+    mapa.create_path()
+    mapa.create_wall()
+    i = Interface()
+    i.show(mapa, player)
 
-i = Interface()
-i.show(mapa)
+    while game_active == True:
+        n = raw_input("\n\n T, Q or B ?: ")
+        if n == "Q":
+            game_active = False
+            print "The end"
+        elif n == "T":
+            #BUILDING PHASE
+            BF = BuildingPhase()
+            BF.start()
+            BF.set_tower(mapa)
+            i.show(mapa, player)
+        elif n == "B":
+            break
+
+
 
 '''Simulation: (Fighting phase)
 

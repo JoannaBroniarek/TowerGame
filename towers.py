@@ -17,6 +17,7 @@ class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! o
 
 class Fortress(Tower):
     def __init__(self, x, y, map_):
+        self.name = "Fortress"
         self.parameters = (x,y)
         self.time = 1
         self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
@@ -31,6 +32,7 @@ class Fortress(Tower):
 
 class Alkazar(Tower):
     def __init__(self, x, y, map_):
+        self.name = "Alkazar"
         self.parameters = (x,y)
         self.time = 2
         self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
@@ -42,6 +44,7 @@ class Alkazar(Tower):
 
 class ArcherTower(Tower): # change the reach
     def __init__(self, x, y, map_):
+        self.name = "Archer Tower"
         self.parameters = (x,y)
         self.time = 3
         self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
@@ -53,6 +56,7 @@ class ArcherTower(Tower): # change the reach
 
 class MagicTower(Tower): #change the reach
     def __init__(self, x, y, map_):
+        self.name = "Magic Tower"
         self.parameters = (x,y)
         self.time = 3
         self.reach = [(x, y) for x in (x-1, x, x+1) for y in (y-1, y, y+1)]
@@ -71,8 +75,9 @@ class TowerFactory(object):
 class BuildingPhase(object):
     @classmethod
     def set_tower(cls, map_):
+        print " F - Fortress, A - Alkazar, R - ArcherTower, M - MagicTower"
         towertype  = raw_input("Please, choose a type of tower: ")
-        column = int(raw_input("The column number: ")) - 1 
+        column = int(raw_input("The column number: ")) - 1
         row = int(raw_input("The row number: "))
         scaledrow = row*2 + 1
         field = map_.get_wall_field(column, scaledrow)
@@ -81,12 +86,11 @@ class BuildingPhase(object):
         Player.add_tower(tower)
         Player.delete_credits(tower.value)
         # ustawiamy tylko na murach! <- try/except
-        return
-
-    @classmethod
-    def update_credits(cls):
-        pass
 
     @classmethod
     def start(cls):
-        print "This is a Building Phase. You can build your towers on the map"
+        print "\nThis is a Building Phase. You can build your towers on the map."
+
+    @classmethod
+    def execute(cls):
+        pass
