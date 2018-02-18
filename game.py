@@ -18,7 +18,7 @@ if __name__ == '__main__':
     mapa.create_path()
     mapa.create_wall()
     i = Interface()
-    i.show(mapa, player)
+    i.show(mapa, player, "bp")
     BF = BuildingPhase()
 
     while game_active == True:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         elif n == "T":      #BUILDING PHASE
             BF.start()
             BF.set_tower(mapa)
-            i.show(mapa, player)
+            i.show(mapa, player, "bp")
         elif n == "B":
             print RivalWave.create(mapa)
 

@@ -12,7 +12,7 @@ from itertools import izip_longest
 class Field(object):
     def __init__(self, x, y, sign, map_):
         self.sign = sign
-        self.content = None #obiekt wiezy lub ludzika ktory ma trybut sign = "X"
+        self.content = None
         self.x = x
         self.y = y
         self.map = map_
@@ -130,9 +130,7 @@ class Player(object):
 
 class Interface(object):
     @classmethod
-    def show(cls, map_, player):
-        s = str(map_)
-        lines = s.split('\n')
+    def bp(cls, player): #building phase
         data_credits = player.credits
         data_towers = player.towers
         data_nextwave = [] # fill it!
@@ -143,6 +141,17 @@ class Interface(object):
         data.extend([i.name + ": " + str(i.parameters) for i in data_towers])
         data.append("~" * 15)
         data.append("Next wave:")
+        return data
+
+    def sim(cls, wave): #simulation
+        data_rivals = []
+        data =[] #widoczne jednostki przeciwnikow i ich suma trafien
+
+    @classmethod
+    def show(cls, map_, arg, phase):
+        d = {"bp": cls.bp, "sim": cls.sim}
+        lines = str(map_).split('\n')
+        data = d[phase](arg)
         zipped = (pair for pair in izip_longest(lines,data))
         result = "\n".join(["{} {}".format(*[" " if x is None else x for x in i]) for i in zipped])
         print result + "\nT -> Build the Tower    B -> Start a Battle    Q -> Quit."

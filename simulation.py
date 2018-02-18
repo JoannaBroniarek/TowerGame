@@ -1,4 +1,11 @@
 from heapq import heappop, heappush
+from rivals import *
+
+class WaveGenerator(object):
+    def generate(self):
+        wave = RivalWave.create
+        for rival in range(len(wave)):
+            yield rival
 
 class Simulator(object):
     def __init__(self, steps):
