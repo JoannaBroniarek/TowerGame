@@ -25,6 +25,7 @@ class Simulator(object):
         if not self.queue:
             raise RuntimeError() #albo bez nawiasow
         for i in range(self.steps): #It should last as long as any event is in the queue
+            time.sleep(0.001)
             self.execute()
 
 

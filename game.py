@@ -17,8 +17,8 @@ if __name__ == '__main__':
     mapa = Map()
     mapa.create_path()
     mapa.create_wall()
-    i = Interface()
-    i.show(mapa, player, "bp")
+    inter = Interface()
+    inter.show(mapa, player, "bp")
     BF = BuildingPhase()
 
     while game_active == True:
@@ -29,9 +29,15 @@ if __name__ == '__main__':
         elif n == "T":      #BUILDING PHASE
             BF.start()
             BF.set_tower(mapa)
-            i.show(mapa, player, "bp")
+            inter.show(mapa, player, "bp")
         elif n == "B":
-            print RivalWave.create(mapa)
+            simulator = Simulator(200)
+            wave = RivalWave.create(mapa)
+            for rival in wave:
+                rival.go(simulator)
+            inter.show(mapa, wave, "sim")
+        else:
+            print "Wrong command"
 
 
 '''Simulation: (Fighting phase)

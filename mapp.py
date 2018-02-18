@@ -143,9 +143,12 @@ class Interface(object):
         data.append("Next wave:")
         return data
 
+    @classmethod
     def sim(cls, wave): #simulation
-        data_rivals = []
-        data =[] #widoczne jednostki przeciwnikow i ich suma trafien
+        data = [] #widoczne jednostki przeciwnikow i ich suma trafien
+        data.append("Active units: ")
+        data.extend([r.name + ": " + str(r.score) for r in wave])
+        return data
 
     @classmethod
     def show(cls, map_, arg, phase):

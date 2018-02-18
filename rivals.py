@@ -14,6 +14,18 @@ class Rival(object):
     def have_effect(self, tower): #special effect in case of being shot
         pass
 
+    def go(self, simulator):
+        t = simulator.now
+        lastfield = None
+        for field in self.map.iter_path():
+            simulator.add_event(t, field.add_content, self)
+            if lastfield is not None:
+                simulator.add_event(t, lastfield.remove_content)
+            lastfield = field
+            t += self.time
+        simulator.add_event(t, lastfield.remove_content)
+
+
 class Paratrooper(Rival):
     def __init__(self, map_):
         self.name = "Paratrooper"
