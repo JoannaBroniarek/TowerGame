@@ -1,6 +1,10 @@
 from abc import ABCMeta , abstractmethod
 from mapp import *
 
+#To do:
+# tworzenie efektow dla wiez
+# tower.shoot
+
 class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! ok
     #@abstractmethod
     def notify(self, rival): #kazda wieza obseruje pola w swoim zasiegu
@@ -81,16 +85,15 @@ class BuildingPhase(object):
         row = int(raw_input("The row number: "))
         scaledrow = row*2 + 1
         field = map_.get_wall_field(column, scaledrow)
-        tower = TowerFactory.create(towertype, column, scaledrow, map_)
-        field.add_content(tower)
-        Player.add_tower(tower)
-        Player.delete_credits(tower.value)
-        # ustawiamy tylko na murach! <- try/except
+        try:
+            tower = TowerFactory.create(towertype, column, scaledrow, map_)
+            Player.delete_credits(tower.value)
+            field.add_content(tower)
+            Player.add_tower(tower)
+        except Exception as e:
+            print e
+            # ustawiamy tylko na murach! <- try/except
 
     @classmethod
     def start(cls):
         print "\nThis is a Building Phase. You can build your towers on the map."
-
-    @classmethod
-    def execute(cls):
-        pass

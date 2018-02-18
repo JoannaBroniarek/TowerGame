@@ -21,7 +21,6 @@ class Field(object):
         if self.content:
             return "%s"%(str(self.content.sign))
         return self.sign
-        #return "("+str(self.x)+","+str(self.y)+")"
 
     def add_content(self, content):
         self.content = content
@@ -35,7 +34,6 @@ class Map(object):
         self.length = 16
         self.rivals_on_board = []
 
-
     def create_path(self): # w odpowiedniej kolejnosci
         self.path_indexes = []
         for y in range(0, self.length, 2):
@@ -43,7 +41,6 @@ class Map(object):
                 for x in range(0, self.width):
                     self.path_indexes.append((x, y))
                 self.path_indexes.append((self.width , y+1))
-
             else:
         		for x in reversed(range(0, self.width)):
         		    self.path_indexes.append((x, y))
@@ -102,7 +99,7 @@ class Map(object):
         return result
 
 class Player(object):
-    credits = 50
+    credits = 40
     towers = []
 
     @classmethod
@@ -111,7 +108,11 @@ class Player(object):
 
     @classmethod
     def delete_credits(cls, value):
-        cls.credits -= value
+        tmp = cls.credits - value
+        if tmp < 0:
+            raise Exception("\n\nYou don`t have enought credits!!\nYou can start a battle. \n\n")
+        else:
+            cls.credits -= value
 
     @classmethod
     def add_tower(cls, tower):
@@ -132,6 +133,6 @@ class Interface(object):
         data.extend([i.name + ": " + str(i.parameters) for i in data_towers])
         data.append("~" * 15)
         data.append("Next wave:")
-
-        result = "\n".join(['{} {}'.format(b, a) for b, a in izip_longest(lines,data)])
-        print result + "\n B -> Start Battle      Q -> Quit."
+        zipped = (pair for pair in izip_longest(lines,data))
+        result = "\n".join(["{} {}".format(*[" " if x is None else x for x in i]) for i in zipped])
+        print result + "\nT -> Build the Tower    B -> Start a Battle    Q -> Quit."
