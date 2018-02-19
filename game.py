@@ -30,7 +30,7 @@ class Cykl(object):
               RivalWave.generate(simulator, map_)
               inter.show(map_, "sim")
               try:
-                  simulator.execute_all(map_)
+                  simulator.execute_all(map_, inter)
                   inter.show(map_, "sim")
               except Defeat:
                   Cykl.game_active = False

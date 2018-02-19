@@ -31,13 +31,14 @@ class Simulator(object):
         else:
             event(*args)
 
-    def execute_all(self, map_):
+    def execute_all(self, map_, interface):
         if not self.queue:
             raise RuntimeError() #albo bez nawiasow
         while True: #It should last as long as any event is in the queue
-            #time.sleep(0.001)
-            #sys.stdout.flush()
+            time.sleep(0.01)
+            sys.stdout.flush()
             self.execute(map_)
+            interface.show(map_, "sim")
 
 
 #kolejne wydarzenia to dodawanie i usuwanie zawartosci kolejnych pol na mapie
