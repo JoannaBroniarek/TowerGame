@@ -82,12 +82,17 @@ class Map(object):
     def iter_path(self):
 	    return iter(self.path)
 
+    def add_rival(self, rival):
+        self.rivals_on_board.append(rival)
+
     def get_rivals(self):
         return self.rivals_on_board
 
     def delete_rival(self, rival):
-        #self.rivals_on_board[]
-        pass
+        tmp = self.rivals_on_board
+        for r in tmp:
+            if r == rival:
+                self.rivals_on_board.remove(r)
 
     def __str__(self):
         result = "  0"
@@ -144,17 +149,18 @@ class Interface(object):
         return data
 
     @classmethod
-    def sim(cls, wave): #simulation
+    def sim(cls): #simulation
         data = [] #widoczne jednostki przeciwnikow i ich suma trafien
         data.append("Active units: ")
-        data.extend([r.name + ": " + str(r.score) for r in wave])
+        data.extend([r.name + ": " + str(r.score) for r in cls.map_.rivals_on_board])
         return data
 
     @classmethod
-    def show(cls, map_, arg, phase):
+    def show(cls, map_, phase, *arg):
+        cls.map_ = map_
         d = {"bp": cls.bp, "sim": cls.sim}
-        lines = str(map_).split('\n')
-        data = d[phase](arg)
+        lines = str(cls.map_).split('\n')
+        data = d[phase](*arg)
         zipped = (pair for pair in izip_longest(lines,data))
         result = "\n".join(["{} {}".format(*[" " if x is None else x for x in i]) for i in zipped])
         print result + "\nT -> Build the Tower    B -> Start a Battle    Q -> Quit."

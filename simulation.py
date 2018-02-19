@@ -1,11 +1,7 @@
 from heapq import heappop, heappush
 from rivals import *
-
-class WaveGenerator(object):
-    def generate(self):
-        wave = RivalWave.create
-        for rival in range(len(wave)):
-            yield rival
+import time
+import sys
 
 class Simulator(object):
     def __init__(self, steps):
@@ -26,6 +22,7 @@ class Simulator(object):
             raise RuntimeError() #albo bez nawiasow
         for i in range(self.steps): #It should last as long as any event is in the queue
             time.sleep(0.001)
+            sys.stdout.flush()
             self.execute()
 
 

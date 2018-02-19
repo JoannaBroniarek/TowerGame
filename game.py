@@ -18,8 +18,8 @@ if __name__ == '__main__':
     mapa.create_path()
     mapa.create_wall()
     inter = Interface()
-    inter.show(mapa, player, "bp")
-    BF = BuildingPhase()
+    inter.show(mapa, "bp", player)
+    BP = BuildingPhase()
 
     while game_active == True:
         n = raw_input("\n\n T, Q or B ?: ")
@@ -27,15 +27,15 @@ if __name__ == '__main__':
             game_active = False
             print "The end"
         elif n == "T":      #BUILDING PHASE
-            BF.start()
-            BF.set_tower(mapa)
-            inter.show(mapa, player, "bp")
+            BP.start()
+            BP.set_tower(mapa)
+            inter.show(mapa,"bp", player)
         elif n == "B":
             simulator = Simulator(200)
-            wave = RivalWave.create(mapa)
-            for rival in wave:
-                rival.go(simulator)
-            inter.show(mapa, wave, "sim")
+            wave = RivalWave.generate(simulator, mapa)
+            inter.show(mapa, "sim")
+            simulator.execute_all()
+            inter.show(mapa, "sim")
         else:
             print "Wrong command"
 

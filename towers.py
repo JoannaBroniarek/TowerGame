@@ -11,13 +11,13 @@ class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! o
             self.board.get_field(parameters[0], parameters[1], "path").add_observer(self)
     #@abstractmethod
     def shoot(self, rival):
-        pass
+        rival.shot()
         #rival.have_effect(self)
 
     #@abstractmethod
     def notify(self, rival): #kazda wieza obseruje pola w swoim zasiegu
         if self.airlyreach == rival.airly:
-            self.shoot()
+            self.shoot(rival)
 
     #@abstractmethod
     def __str__(self):

@@ -1,5 +1,6 @@
 from mapp import *
 from random import *
+from operator import attrgetter
 import sys
 
 class Rival(object):
@@ -8,14 +9,13 @@ class Rival(object):
 
     def shot(self):
         self.score -= 1
-        if self.score == 0:
+        if self.score <= 0:
             self.map.delete_rival(self)
 
     def have_effect(self, tower): #special effect in case of being shot
         pass
 
-    def go(self, simulator):
-        t = simulator.now
+    def go(self, simulator, t):
         lastfield = None
         for field in self.map.iter_path():
             simulator.add_event(t, field.add_content, self)
@@ -30,8 +30,8 @@ class Paratrooper(Rival):
     def __init__(self, map_):
         self.name = "Paratrooper"
         self.sign = "P"
-        self.score = 5
-        self.time = 1
+        self.score = 7
+        self.time = 3
         self.airly = True
         self.credits = 10
         self.map = map_
@@ -40,7 +40,7 @@ class Knight(Rival):
     def __init__(self, map_):
         self.name = "Knight"
         self.sign = "K"
-        self.score = 4
+        self.score = 9
         self.time = 3
         self.airly = False
         self.credits = 12
@@ -51,7 +51,7 @@ class Viking(Rival):
         self.name = "Viking"
         self.sign = "V"
         self.score = 6
-        self.time = 2
+        self.time = 5
         self.airly = False
         self.credits = 7
         self.map = map_
@@ -70,8 +70,8 @@ class Speeder(Rival):
     def __init__(self, map_):
         self.name = "Speeder"
         self.sign = "S"
-        self.score = 3
-        self.time = 5
+        self.score = 8
+        self.time = 1
         self.airly = False
         self.credits = 20
         self.map = map_
@@ -87,20 +87,31 @@ class RivalWave(object):
     airly = ["paratrooper", "dragon"]
     groundbased = ["knight", "viking", "speeder"]
     counter = 0
+    wave =[]
 
     @classmethod
     def create(cls, map_):
-        wave = []
         if cls.counter < 2:
             for i in range(1, randint(2,3)):
-                wave.append(RivalFactory.create(choice(cls.airly + cls.groundbased), map_))
+                cls.wave.append(RivalFactory.create(choice(cls.airly + cls.groundbased), map_))
         elif cls.counter == 2 or cls.counter == 3:
-            wave.append(RivalFactory.create(choice(cls.airly), map_))
+            cls.wave.append(RivalFactory.create(choice(cls.airly), map_))
             for i in range(3, randint(3, 5)):
-                wave.append(RivalFactory.create(choice(cls.groundbased), map_))
+                cls.wave.append(RivalFactory.create(choice(cls.groundbased), map_))
         else:
             for i in range(2, randint(3, 6)):
-                wave.append(RivalFactory.create(choice(cls.airly), map_))
-                wave.append(RivalFactory.create(choice(cls.groundbased), map_))
+                cls.wave.append(RivalFactory.create(choice(cls.airly), map_))
+                cls.wave.append(RivalFactory.create(choice(cls.groundbased), map_))
         cls.counter+=1
+
+    @classmethod
+    def generate(cls, simulator, map_):
+        time = simulator.now
+        cls.create(map_)
+        wave = sorted(cls.wave, key=attrgetter('time'))
+        for rival in wave:
+            map_.add_rival(rival)
+            rival.go(simulator, time)
+            time += 1
+        cls.wave = []
         return wave
