@@ -5,6 +5,44 @@ from simulation import *
 import sys
 import time
 
+class Cykl(object):
+  game_active = True
+  counter = 0
+  loops = 5   #number of simulations
+  @classmethod
+  def execute(cls, map_):
+      while cls.game_active == True and cls.loops >= 0:
+          BP.start()
+          n = raw_input("\n\n T, Q or B ?: ")
+          if n == "Q":
+              cls.game_active = False
+              print "The end"
+          elif n == "T":
+              if cls.counter == 0:
+                  RivalWave.create(map_)
+                  inter.show(mapa,"bp")
+                  cls.counter += 1
+              BP.set_tower(map_)
+              inter.show(mapa,"bp")
+          elif n == "B":
+              simulator = Simulator()
+              simulator.start()
+              RivalWave.generate(simulator, map_)
+              inter.show(map_, "sim")
+              try:
+                  simulator.execute_all(map_)
+                  inter.show(map_, "sim")
+              except Defeat:
+                  Cykl.game_active = False
+                  inter.show(map_, "sim")
+                  print "\n Game over \n"
+              except Victory:
+                  print "\n You won the battle !!! \n"
+              cls.loops -= 1
+              cls.counter = 0
+          else:
+              print "Wrong command"
+
 if __name__ == '__main__':
     print '\n' * 10
     print ("Welcome to the Tower Game\n\n" +
@@ -12,15 +50,18 @@ if __name__ == '__main__':
            "Have fun ;)\n\n")
     raw_input(".... (hit enter) ...")
 
-    game_active = True
-    player = Player()
     mapa = Map()
     mapa.create_path()
     mapa.create_wall()
     inter = Interface()
-    inter.show(mapa, "bp", player)
     BP = BuildingPhase()
+    Cykl()
+    Cykl.execute(mapa)
 
+
+
+
+    '''
     while game_active == True:
         n = raw_input("\n\n T, Q or B ?: ")
         if n == "Q":
@@ -32,12 +73,17 @@ if __name__ == '__main__':
             inter.show(mapa,"bp", player)
         elif n == "B":
             simulator = Simulator(200)
-            wave = RivalWave.generate(simulator, mapa)
+            RivalWave.generate(simulator, mapa)
             inter.show(mapa, "sim")
             simulator.execute_all()
             inter.show(mapa, "sim")
         else:
             print "Wrong command"
+
+    '''
+
+
+
 
 
 '''Simulation: (Fighting phase)

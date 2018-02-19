@@ -3,27 +3,41 @@ from rivals import *
 import time
 import sys
 
+class Defeat(Exception):
+    pass
+
+class Victory(Exception):
+    pass
+
 class Simulator(object):
-    def __init__(self, steps):
+    def __init__(self):
         self.now = 0
         self.queue = []
-        self.steps = steps
+        #self.steps = steps
+
+    def start(self):
+        print "\n Simulation of the battle... \n\n"
 
     def add_event(self, time, method, *args):
-        heappush(self.queue, (self.now + time, method, args))
+        heappush(self.queue, (time, method, args))
         #self.queue.append((time, method, args))
 
-    def execute(self):
+    def execute(self, map_):
         self.now, event, args = heappop(self.queue)
-        event(*args)
+        if not map_.rivals_on_board :
+            raise Victory()
+        elif not self.queue :
+            raise Defeat()
+        else:
+            event(*args)
 
-    def execute_all(self):
+    def execute_all(self, map_):
         if not self.queue:
             raise RuntimeError() #albo bez nawiasow
-        for i in range(self.steps): #It should last as long as any event is in the queue
-            time.sleep(0.001)
-            sys.stdout.flush()
-            self.execute()
+        while True: #It should last as long as any event is in the queue
+            #time.sleep(0.001)
+            #sys.stdout.flush()
+            self.execute(map_)
 
 
 #kolejne wydarzenia to dodawanie i usuwanie zawartosci kolejnych pol na mapie

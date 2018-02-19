@@ -11,6 +11,7 @@ class Rival(object):
         self.score -= 1
         if self.score <= 0:
             self.map.delete_rival(self)
+            self.map.player.add_credits(self.credits)
 
     def have_effect(self, tower): #special effect in case of being shot
         pass
@@ -88,9 +89,10 @@ class RivalWave(object):
     groundbased = ["knight", "viking", "speeder"]
     counter = 0
     wave =[]
+    #counter = 0
 
     @classmethod
-    def create(cls, map_):
+    def create(cls, map_): #algorithm of the rival wave creating
         if cls.counter < 2:
             for i in range(1, randint(2,3)):
                 cls.wave.append(RivalFactory.create(choice(cls.airly + cls.groundbased), map_))
@@ -102,16 +104,20 @@ class RivalWave(object):
             for i in range(2, randint(3, 6)):
                 cls.wave.append(RivalFactory.create(choice(cls.airly), map_))
                 cls.wave.append(RivalFactory.create(choice(cls.groundbased), map_))
-        cls.counter+=1
+        #cls.counter+=1
 
     @classmethod
     def generate(cls, simulator, map_):
         time = simulator.now
-        cls.create(map_)
+        '''
+        if cls.counter == 0:
+            cls.create(map_)
+            cls.counter += 1
+        '''
         wave = sorted(cls.wave, key=attrgetter('time'))
         for rival in wave:
             map_.add_rival(rival)
             rival.go(simulator, time)
             time += 1
         cls.wave = []
-        return wave
+        cls.create(map_) #the next wave

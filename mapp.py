@@ -37,11 +37,31 @@ class Field(object):
     def notify(self, observer):
         observer.notify(self.content)
 
+class Player(object):
+    credits = 40
+    towers = []
+    @classmethod
+    def add_credits(cls, value):
+        cls.credits += value
+
+    @classmethod
+    def delete_credits(cls, value):
+        tmp = cls.credits - value
+        if tmp < 0:
+            raise Exception("\n\nYou don`t have enought credits!!\nYou can start a battle. \n\n")
+        else:
+            cls.credits -= value
+
+    @classmethod
+    def add_tower(cls, tower):
+        cls.towers.append(tower)
+
 class Map(object):
     def __init__(self):
         self.width = 44
         self.length = 16
         self.rivals_on_board = []
+        self.player = Player()
 
     def create_path(self): # w odpowiedniej kolejnosci
         self.path_indexes = []
@@ -113,32 +133,12 @@ class Map(object):
         result += "|\n |" + "_" * self.width + "|"
         return result
 
-class Player(object):
-    credits = 40
-    towers = []
-
-    @classmethod
-    def add_credits(cls, value):
-        cls.credits += value
-
-    @classmethod
-    def delete_credits(cls, value):
-        tmp = cls.credits - value
-        if tmp < 0:
-            raise Exception("\n\nYou don`t have enought credits!!\nYou can start a battle. \n\n")
-        else:
-            cls.credits -= value
-
-    @classmethod
-    def add_tower(cls, tower):
-        cls.towers.append(tower)
-
 class Interface(object):
     @classmethod
-    def bp(cls, player): #building phase
-        data_credits = player.credits
-        data_towers = player.towers
-        data_nextwave = [] # fill it!
+    def bp(cls): #building phase
+        data_credits = cls.map_.player.credits
+        data_towers = cls.map_.player.towers
+        data_nextwave = RivalWave.wave
         data = []
         data.append("$: " + str(data_credits))
         data.append("Waves remining: ")
@@ -146,6 +146,7 @@ class Interface(object):
         data.extend([i.name + ": " + str(i.parameters) for i in data_towers])
         data.append("~" * 15)
         data.append("Next wave:")
+        data.extend([i.name + ": " + str(i.score) for i in data_nextwave])
         return data
 
     @classmethod
@@ -163,4 +164,4 @@ class Interface(object):
         data = d[phase](*arg)
         zipped = (pair for pair in izip_longest(lines,data))
         result = "\n".join(["{} {}".format(*[" " if x is None else x for x in i]) for i in zipped])
-        print result + "\nT -> Build the Tower    B -> Start a Battle    Q -> Quit."
+        print result + "\n    T -> Build the Tower    B -> Start a Battle    Q -> Quit."
