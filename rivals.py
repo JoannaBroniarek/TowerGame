@@ -13,18 +13,19 @@ class Rival(object):
             self.map.delete_rival(self)
             self.map.player.add_credits(self.credits)
 
-    def have_effect(self, tower): #special effect in case of being shot
-        pass
+    #def have_effect(self, tower, field): #special effect in case of being shot
+    #    tower.produce_effect(field, RivalWave.simulator)
 
-    def go(self, simulator, t):
+    def go(self, t):
         lastfield = None
         for field in self.map.iter_path():
-            simulator.add_event(t, field.add_content, self)
+            RivalWave.simulator.add_event(t, field.add_content, self)
             if lastfield is not None:
-                simulator.add_event(t, lastfield.remove_content)
+                RivalWave.simulator.add_event(t, lastfield.remove_content)
             lastfield = field
             t += self.time
-        simulator.add_event(t, lastfield.remove_content)
+        RivalWave.simulator.add_event(t, lastfield.remove_content)
+        RivalWave.simulator.add_event(t, lastfield.end)
 
 
 class Paratrooper(Rival):
@@ -32,8 +33,9 @@ class Paratrooper(Rival):
         self.name = "Paratrooper"
         self.sign = "P"
         self.score = 7
-        self.time = 3
+        self.time = 4
         self.airly = True
+        self.resistance = False
         self.credits = 10
         self.map = map_
 
@@ -41,9 +43,10 @@ class Knight(Rival):
     def __init__(self, map_):
         self.name = "Knight"
         self.sign = "K"
-        self.score = 9
+        self.score = 20
         self.time = 3
         self.airly = False
+        self.resistance = False
         self.credits = 12
         self.map = map_
 
@@ -51,9 +54,10 @@ class Viking(Rival):
     def __init__(self, map_):
         self.name = "Viking"
         self.sign = "V"
-        self.score = 6
+        self.score = 20
         self.time = 5
         self.airly = False
+        self.resistance = True #resistant to special effects
         self.credits = 7
         self.map = map_
 
@@ -64,6 +68,7 @@ class Dragon(Rival):
         self.score = 8
         self.time = 2
         self.airly = True
+        self.resistance = False
         self.credits = 15
         self.map = map_
 
@@ -89,6 +94,7 @@ class RivalWave(object):
     groundbased = ["knight", "viking", "speeder"]
     counter = 0
     wave =[]
+    simulator = None
     #counter = 0
 
     @classmethod
@@ -107,8 +113,8 @@ class RivalWave(object):
         #cls.counter+=1
 
     @classmethod
-    def generate(cls, simulator, map_):
-        time = simulator.now
+    def generate(cls, map_):
+        time = cls.simulator.now
         '''
         if cls.counter == 0:
             cls.create(map_)
@@ -117,7 +123,7 @@ class RivalWave(object):
         wave = sorted(cls.wave, key=attrgetter('time'))
         for rival in wave:
             map_.add_rival(rival)
-            rival.go(simulator, time)
+            rival.go(time)
             time += 1
         cls.wave = []
-        cls.create(map_) #the next wave
+        #cls.create(map_) #the next wave

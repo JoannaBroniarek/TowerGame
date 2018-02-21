@@ -18,16 +18,18 @@ class Cykl(object):
               cls.game_active = False
               print "The end"
           elif n == "T":
-              if cls.counter == 0:
+              if cls.counter == 0 :
+                  simulator = Simulator()
+                  RivalWave.simulator = simulator
                   RivalWave.create(map_)
                   inter.show(mapa,"bp")
                   cls.counter += 1
               BP.set_tower(map_)
               inter.show(mapa,"bp")
           elif n == "B":
-              simulator = Simulator()
               simulator.start()
-              RivalWave.generate(simulator, map_)
+              RivalWave.generate(map_)
+              #RivalWave.create(map_)#the next wave
               inter.show(map_, "sim")
               try:
                   simulator.execute_all(map_, inter)

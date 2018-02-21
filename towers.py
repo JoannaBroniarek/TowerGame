@@ -1,24 +1,23 @@
 from abc import ABCMeta , abstractmethod
 from mapp import *
+from random import randint
 
-#To do:
-# tworzenie efektow dla wiez
-# tower.shoot
 
 class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! ok
     def observe_fields(self):
         for parameters in self.reach:
             self.board.get_field(parameters[0], parameters[1], "path").add_observer(self)
     #@abstractmethod
-    def shoot(self, rival):
+    def shoot(self, field):
+        rival = field.content
         rival.shot()
-        #rival.have_effect(self)
 
     #@abstractmethod
-    def notify(self, rival): #kazda wieza obseruje pola w swoim zasiegu
-        if self.airlyreach == rival.airly:
-            self.shoot(rival)
-
+    def notify(self, field): #kazda wieza obseruje pola w swoim zasiegu
+        if self.airlyreach == field.content.airly:
+            self.shoot(field)
+            if not field.content.resistance:
+                self.produce_effect(field, RivalWave.simulator)
     #@abstractmethod
     def __str__(self):
         return self.sign
@@ -35,8 +34,14 @@ class Fortress(Tower):
         self.sign = "F"
         self.value = 4
 
-    def produce_effect(self):
-        pass
+    def produce_effect(self, field, simulator):#bron odlamkowa, dostaje nawet ten latajacy
+        ind = self.board.rivals_on_board.index(field.content)
+        t = simulator.now
+        if ind > 0:
+            simulator.add_event(t, self.board.rivals_on_board[ind - 1].shot)
+        if ind < len(self.board.rivals_on_board):
+            simulator.add_event(t, self.board.rivals_on_board[ind + 1].shot)
+
 
 class Alkazar(Tower):
     def __init__(self, x, y, map_):
@@ -50,6 +55,9 @@ class Alkazar(Tower):
         self.sign = "A"
         self.value = 4
 
+    def produce_effect(self, field, simulator):
+        return
+
 class ArcherTower(Tower): # change the reach
     def __init__(self, x, y, map_):
         self.name = "Archer Tower"
@@ -62,6 +70,11 @@ class ArcherTower(Tower): # change the reach
         self.sign = "R"
         self.value = 4
 
+    def produce_effect(self, field, simulator): #zatrute strzaly
+        t = simulator.now
+        simulator.add_event(t + 1, field.content.shot)
+        simulator.add_event(t + 2, field.content.shot)
+
 class MagicTower(Tower): #change the reach
     def __init__(self, x, y, map_):
         self.name = "Magic Tower"
@@ -73,6 +86,12 @@ class MagicTower(Tower): #change the reach
         self.board = map_
         self.sign = "M"
         self.value = 4
+
+    def produce_effect(self, field, simulator): #bron ogluszajaca
+        for event in simulator.queue:
+            if event[2] == field.content:
+                event[0] += 1
+
 
 class TowerFactory(object):
     towers = {"F":Fortress, "A":Alkazar, "R":ArcherTower, "M":MagicTower}

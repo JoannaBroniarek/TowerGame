@@ -35,7 +35,10 @@ class Field(object):
         self.observers.append(observer)
 
     def notify(self, observer):
-        observer.notify(self.content)
+        observer.notify(self)
+
+    def end(self):
+        raise Defeat()
 
 class Player(object):
     credits = 40
@@ -62,6 +65,8 @@ class Map(object):
         self.length = 16
         self.rivals_on_board = []
         self.player = Player()
+        self.path_indexes = None #popraw tego typu bledy
+        self.wall_indexes = None
 
     def create_path(self): # w odpowiedniej kolejnosci
         self.path_indexes = []
@@ -96,7 +101,7 @@ class Map(object):
             for field in d[where]:
                 if field.y == y and field.x == x:
                     return field
-        except ValueError:
+        except ValueError: #zle - popraw
             print "This field doesn`t exist."
 
     def iter_path(self):
