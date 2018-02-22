@@ -6,14 +6,15 @@ import sys
 class Defeat(Exception):
     pass
 
+
 class Victory(Exception):
     pass
+
 
 class Simulator(object):
     def __init__(self):
         self.now = 0
         self.queue = []
-        #self.steps = steps
 
     def start(self):
         print "\n Simulation of the battle... \n\n"
@@ -32,9 +33,10 @@ class Simulator(object):
 
     def execute_all(self, map_, interface):
         if not self.queue:
-            raise RuntimeError() #albo bez nawiasow
-        while True: #It should last as long as any event is in the queue
+            raise RuntimeError
+        while True:
             time.sleep(0.01)
             sys.stdout.flush()
             self.execute(map_)
             interface.show(map_, "sim")
+        #if

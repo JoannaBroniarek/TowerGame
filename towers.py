@@ -2,25 +2,24 @@ from abc import ABCMeta , abstractmethod
 from mapp import *
 from random import randint
 
-
-class Tower(object): #(ABCMeta): # pomysl - zrobic z tego klase abstrakcyjna ! ok
+class Tower(object):
     def observe_fields(self):
         for parameters in self.reach:
             self.board.get_field(parameters[0], parameters[1], "path").add_observer(self)
-    #@abstractmethod
+
     def shoot(self, field):
         rival = field.content
         rival.shot()
 
-    #@abstractmethod
     def notify(self, field): #kazda wieza obseruje pola w swoim zasiegu
         if self.airlyreach == field.content.airly:
             self.shoot(field)
             if not field.content.resistance:
                 self.produce_effect(field, RivalWave.simulator)
-    #@abstractmethod
+
     def __str__(self):
         return self.sign
+
 
 class Fortress(Tower):
     def __init__(self, x, y, map_):
@@ -58,6 +57,7 @@ class Alkazar(Tower):
     def produce_effect(self, field, simulator):
         return
 
+
 class ArcherTower(Tower): # change the reach
     def __init__(self, x, y, map_):
         self.name = "Archer Tower"
@@ -74,6 +74,7 @@ class ArcherTower(Tower): # change the reach
         t = simulator.now
         simulator.add_event(t + 1, field.content.shot)
         simulator.add_event(t + 2, field.content.shot)
+
 
 class MagicTower(Tower): #change the reach
     def __init__(self, x, y, map_):
@@ -99,8 +100,10 @@ class TowerFactory(object):
     def create(cls, type_, x, y, map_):
         return cls.towers[type_](x, y, map_)
 
+
 class WrongValueError(Exception):
     pass
+
 
 class BuildingPhase(object):
     @staticmethod
@@ -119,6 +122,7 @@ class BuildingPhase(object):
     @classmethod
     def set_tower(cls, map_):
         print " F - Fortress (o), A - Alkazar (o), R - ArcherTower (f), M - MagicTower (f)"
+        print " [o - overground, f - flying] \n"
         correct = False
         while not correct:
             try:
@@ -137,8 +141,7 @@ class BuildingPhase(object):
             tower.observe_fields()
             Player.add_tower(tower)
         except Exception as e:
-            print "\n\n\nError!!!!!\n\n\n", e
-            # ustawiamy tylko na murach! <- try/except
+            print "\n\n\n Unknown Error! \n\n\n", e
 
     @classmethod
     def start(cls):

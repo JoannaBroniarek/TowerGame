@@ -5,6 +5,21 @@ from simulation import *
 import sys
 import time
 
+# co gdzie sie znajduje i jakie importy
+# 2 znaki na mapie na koniec symulacji:
+'''
+przeszukuje krotki, ktore maja czas t= sim.now a potem
+szukaja tych ktore maja metode field.remove
+i wykonuja je
+'''
+# czyszczenie mapy ze wszystkich przeciwnikow po bitwie
+"""
+for field in mapa.iter_path:
+    field.remove_content()
+"""
+# usun nieporzebne fragmenty kodu
+# ustaw rozne zasiegi
+
 class Instruction(object):
   @staticmethod
   def help():

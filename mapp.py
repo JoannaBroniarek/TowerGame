@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Jan 24 11:26:59 2018
-
 @author: Asia
 """
 from simulation import *
@@ -40,6 +39,7 @@ class Field(object):
     def end(self):
         raise Defeat()
 
+
 class Player(object):
     credits = 50
     towers = []
@@ -59,6 +59,7 @@ class Player(object):
     def add_tower(cls, tower):
         cls.towers.append(tower)
 
+
 class Map(object):
     def __init__(self):
         self.width = 44
@@ -68,7 +69,7 @@ class Map(object):
         self.path_indexes = None #popraw tego typu bledy
         self.wall_indexes = None
 
-    def create_path(self): # w odpowiedniej kolejnosci
+    def create_path(self): #right order
         self.path_indexes = []
         for y in range(0, self.length, 2):
             if y%4 == 0:
@@ -83,7 +84,7 @@ class Map(object):
             self.path_indexes.append((x, self.length))
         self.path = [Field(x, y, ".", self) for (x,y) in self.path_indexes]
 
-    def create_wall(self): # w odpowiedniej kolejnosci
+    def create_wall(self): #right order
         self.wall_indexes = []
         r1 = range(1, self.width)
         r2 = list(reversed(range(0, self.width - 1)))
@@ -137,6 +138,7 @@ class Map(object):
             result += str(i)
         result += "|\n |" + "_" * self.width + "|"
         return result
+
 
 class Interface(object):
     @classmethod
