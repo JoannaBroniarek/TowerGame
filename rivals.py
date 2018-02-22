@@ -13,9 +13,6 @@ class Rival(object):
             self.map.delete_rival(self)
             self.map.player.add_credits(self.credits)
 
-    #def have_effect(self, tower, field): #special effect in case of being shot
-    #    tower.produce_effect(field, RivalWave.simulator)
-
     def go(self, t):
         lastfield = None
         for field in self.map.iter_path():
@@ -43,7 +40,7 @@ class Knight(Rival):
     def __init__(self, map_):
         self.name = "Knight"
         self.sign = "K"
-        self.score = 20
+        self.score = 14
         self.time = 3
         self.airly = False
         self.resistance = False
@@ -54,7 +51,7 @@ class Viking(Rival):
     def __init__(self, map_):
         self.name = "Viking"
         self.sign = "V"
-        self.score = 20
+        self.score = 15
         self.time = 5
         self.airly = False
         self.resistance = True #resistant to special effects
@@ -65,7 +62,7 @@ class Dragon(Rival):
     def __init__(self, map_):
         self.name = "Dragon"
         self.sign = "D"
-        self.score = 8
+        self.score = 11
         self.time = 2
         self.airly = True
         self.resistance = False
@@ -78,6 +75,7 @@ class Speeder(Rival):
         self.sign = "S"
         self.score = 8
         self.time = 1
+        self.resistance = False
         self.airly = False
         self.credits = 20
         self.map = map_

@@ -5,15 +5,26 @@ from simulation import *
 import sys
 import time
 
+class Instruction(object):
+  @staticmethod
+  def help():
+    print "\nF - Fortress:\n -- kills mainly flying rivals\n -- the special effect 'shrapnels' gives a chance to kill flying rivals"
+    print "A - Alkazar:\n -- kills only flying rivals\n -- there is no special effect"
+    print "R - ArcherTower:\n -- kills only overland rivals\n -- the special effect 'poisonous arrows'"
+    print "M - MagicTower:\n -- kills only overland rivals\n -- the special effect 'poleaxing'"
+
 class Cykl(object):
   game_active = True
   counter = 0
   loops = 5   #number of simulations
   @classmethod
-  def execute(cls, map_):
+  def execute(cls, map_, inter, BP):
+      Instruction.help()
       while cls.game_active == True and cls.loops >= 0:
           BP.start()
+          print "\n\t T -> Build a Tower\tB -> Start a Battle\tQ -> Quit.\n"
           n = raw_input("\n\n T, Q or B ?: ")
+          print
           if n == "Q":
               cls.game_active = False
               print "The end"
@@ -22,10 +33,10 @@ class Cykl(object):
                   simulator = Simulator()
                   RivalWave.simulator = simulator
                   RivalWave.create(map_)
-                  inter.show(mapa,"bp")
+                  inter.show(map_, "bp") ####
                   cls.counter += 1
               BP.set_tower(map_)
-              inter.show(mapa,"bp")
+              inter.show(map_, "bp") ####
           elif n == "B":
               simulator.start()
               RivalWave.generate(map_)
@@ -45,66 +56,22 @@ class Cykl(object):
           else:
               print "Wrong command"
 
+
+class InitialElements(object):
+    @staticmethod
+    def set():
+        mapa = Map()
+        mapa.create_path()
+        mapa.create_wall()
+        inter = Interface()
+        BP = BuildingPhase()
+        Cykl()
+        Cykl.execute(mapa, inter, BP)
+
 if __name__ == '__main__':
     print '\n' * 10
     print ("Welcome to the Tower Game\n\n" +
            "To make a play, hit enter\n\n" +
            "Have fun ;)\n\n")
     raw_input(".... (hit enter) ...")
-
-    mapa = Map()
-    mapa.create_path()
-    mapa.create_wall()
-    inter = Interface()
-    BP = BuildingPhase()
-    Cykl()
-    Cykl.execute(mapa)
-
-
-
-
-    '''
-    while game_active == True:
-        n = raw_input("\n\n T, Q or B ?: ")
-        if n == "Q":
-            game_active = False
-            print "The end"
-        elif n == "T":      #BUILDING PHASE
-            BP.start()
-            BP.set_tower(mapa)
-            inter.show(mapa,"bp", player)
-        elif n == "B":
-            simulator = Simulator(200)
-            RivalWave.generate(simulator, mapa)
-            inter.show(mapa, "sim")
-            simulator.execute_all()
-            inter.show(mapa, "sim")
-        else:
-            print "Wrong command"
-
-    '''
-
-
-
-
-
-'''Simulation: (Fighting phase)
-
-#time.sleep(0.001) # jak szybko wyswietlane sa zmiany
-#sys.stdout.flush() #nic nie zapamietuje, wszystko wyswietla
-
-sim = Simulator(400) #560 obejscie sciezki - uogolnij to gdyby rozmiary sie zmienily
-# SYMULATION of walking for a test rival "P"
-t = sim.now
-lastfield = None
-for field in mapa.iter_path():
-    sim.add_event(t, field.add_content, p)
-    if lastfield is not None:
-        sim.add_event(t, lastfield.remove_content)
-    lastfield = field
-    t+=1
-sim.add_event(t, lastfield.remove_content)
-# why I cannot remove a few fields? - it depends on how many steps I have
-# jak dodaje zawartosc do pola nastepnego to musze usuwac z poprzedniego
-sim.execute_all()
-'''
+    InitialElements.set()

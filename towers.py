@@ -39,7 +39,7 @@ class Fortress(Tower):
         t = simulator.now
         if ind > 0:
             simulator.add_event(t, self.board.rivals_on_board[ind - 1].shot)
-        if ind < len(self.board.rivals_on_board):
+        if ind < len(self.board.rivals_on_board) - 1:
             simulator.add_event(t, self.board.rivals_on_board[ind + 1].shot)
 
 
@@ -99,14 +99,36 @@ class TowerFactory(object):
     def create(cls, type_, x, y, map_):
         return cls.towers[type_](x, y, map_)
 
+class WrongValueError(Exception):
+    pass
+
 class BuildingPhase(object):
+    @staticmethod
+    def take_input(map_):
+        towertype  = raw_input("Please, choose a type of tower: ")
+        if towertype not in ["F", "A", "R", "M"]:
+            raise WrongValueError
+        column = int(raw_input("The column number: ")) - 1
+        if column not in range(map_.width):
+            raise WrongValueError
+        row = int(raw_input("The row number: "))
+        if row not in range(int(map_.length / 2)):
+            raise WrongValueError
+        return (towertype, column, row)
+
     @classmethod
     def set_tower(cls, map_):
-        print " F - Fortress, A - Alkazar, R - ArcherTower, M - MagicTower"
-        towertype  = raw_input("Please, choose a type of tower: ")
-        column = int(raw_input("The column number: ")) - 1
-        row = int(raw_input("The row number: "))
-        scaledrow = row*2 + 1
+        print " F - Fortress (o), A - Alkazar (o), R - ArcherTower (f), M - MagicTower (f)"
+        correct = False
+        while not correct:
+            try:
+                p = cls.take_input(map_)
+                correct = True
+            except WrongValueError:
+                print "Wrong Value"
+        scaledrow = p[2]*2 + 1
+        column = p[1]
+        towertype = p[0]
         field = map_.get_field(column, scaledrow, "wall")
         try:
             tower = TowerFactory.create(towertype, column, scaledrow, map_)
@@ -120,4 +142,4 @@ class BuildingPhase(object):
 
     @classmethod
     def start(cls):
-        print "\nThis is a Building Phase. You can build your towers on the map."
+        print "\nThis is a Building Phase. You can build your towers on the map.\n"

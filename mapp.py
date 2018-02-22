@@ -41,7 +41,7 @@ class Field(object):
         raise Defeat()
 
 class Player(object):
-    credits = 40
+    credits = 50
     towers = []
     @classmethod
     def add_credits(cls, value):
@@ -148,10 +148,10 @@ class Interface(object):
         data.append("$: " + str(data_credits))
         data.append("Waves remining: ")
         data.append("~" * 15)
-        data.extend([i.name + ": " + str(i.parameters) for i in data_towers])
+        data.extend([i.name + ": (" + str(i.parameters[0] + 1) + ", " + str((i.parameters[1] - 1) / 2) + ")" for i in data_towers])
         data.append("~" * 15)
-        data.append("Next wave:")
-        data.extend([i.name + ": " + str(i.score) for i in data_nextwave])
+        data.append("Next wave: lives | credits")
+        data.extend([i.name + ":\t" + str(i.score) + " | " + str(i.credits) for i in data_nextwave])
         return data
 
     @classmethod
@@ -169,4 +169,4 @@ class Interface(object):
         data = d[phase](*arg)
         zipped = (pair for pair in izip_longest(lines,data))
         result = "\n".join(["{} {}".format(*[" " if x is None else x for x in i]) for i in zipped])
-        print result + "\n    T -> Build the Tower    B -> Start a Battle    Q -> Quit."
+        print result + "\n"
