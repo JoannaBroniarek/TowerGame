@@ -28,6 +28,8 @@ class Simulator(object):
             raise Victory()
         elif not self.queue:
             raise Defeat()
+        elif len(args) > 0 and args[0] not in map_.rivals_on_board and isinstance(args[0], Rival):
+            pass
         else:
             event(*args)
 
@@ -39,4 +41,8 @@ class Simulator(object):
             sys.stdout.flush()
             self.execute(map_)
             interface.show(map_, "sim")
-        #if
+
+    def delete_rival(self, rival):
+        for e in self.queue:
+            if e[2] == rival:
+                self.queue.remove(e)

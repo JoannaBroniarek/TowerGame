@@ -34,12 +34,15 @@ class Fortress(Tower):
         self.value = 4
 
     def produce_effect(self, field, simulator):#bron odlamkowa, dostaje nawet ten latajacy
-        ind = self.board.rivals_on_board.index(field.content)
-        t = simulator.now
-        if ind > 0:
-            simulator.add_event(t, self.board.rivals_on_board[ind - 1].shot)
-        if ind < len(self.board.rivals_on_board) - 1:
-            simulator.add_event(t, self.board.rivals_on_board[ind + 1].shot)
+        try:
+            ind = self.board.rivals_on_board.index(field.content)
+            t = simulator.now
+            if ind > 0:
+                simulator.add_event(t, self.board.rivals_on_board[ind - 1].shot)
+            if ind < len(self.board.rivals_on_board) - 1:
+                simulator.add_event(t, self.board.rivals_on_board[ind + 1].shot)
+        except:
+            pass
 
 
 class Alkazar(Tower):
@@ -111,7 +114,7 @@ class BuildingPhase(object):
         towertype  = raw_input("Please, choose a type of tower: ")
         if towertype not in ["F", "A", "R", "M"]:
             raise WrongValueError
-        column = int(raw_input("The column number: ")) - 1
+        column = int(raw_input("The column number: "))
         if column not in range(map_.width):
             raise WrongValueError
         row = int(raw_input("The row number: "))
@@ -141,7 +144,7 @@ class BuildingPhase(object):
             tower.observe_fields()
             Player.add_tower(tower)
         except Exception as e:
-            print "\n\n\n Unknown Error! \n\n\n", e
+            print "Unknown Error", e
 
     @classmethod
     def start(cls):

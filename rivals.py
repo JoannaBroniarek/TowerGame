@@ -11,6 +11,7 @@ class Rival(object):
         self.score -= 1
         if self.score <= 0:
             self.map.delete_rival(self)
+            RivalWave.simulator.delete_rival(self)
             self.map.player.add_credits(self.credits)
 
     def go(self, t):
@@ -98,7 +99,6 @@ class RivalWave(object):
     counter = 0
     wave = []
     simulator = None
-
     @classmethod
     def create(cls, map_): #algorithm of the rival wave creating
         if cls.counter < 2:
@@ -118,7 +118,8 @@ class RivalWave(object):
         time = cls.simulator.now
         wave = sorted(cls.wave, key=attrgetter('time'))
         for rival in wave:
+            print rival, time
             map_.add_rival(rival)
             rival.go(time)
-            time += 1
+            time += 2
         cls.wave = []

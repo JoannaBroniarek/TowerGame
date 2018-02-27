@@ -119,6 +119,9 @@ class Map(object):
         for r in tmp:
             if r == rival:
                 self.rivals_on_board.remove(r)
+    def clear(self):
+        for field in self.iter_path():
+            field.remove_content()
 
     def __str__(self):
         result = "  0"
