@@ -36,6 +36,10 @@ class Field(object):
     def notify(self, observer):
         observer.notify(self)
 
+    def check_content(self):
+        if type(self.content) != type(None):
+            raise Exception
+
     def end(self):
         raise Defeat()
 
@@ -51,7 +55,7 @@ class Player(object):
     def delete_credits(cls, value):
         tmp = cls.credits - value
         if tmp < 0:
-            raise Exception("\n\nYou don`t have enought credits!!\nYou can start a battle. \n\n")
+            raise Exception("\n\nYou do not have enought credits!!\nYou can start a battle. \n\n")
         else:
             cls.credits -= value
 
@@ -66,7 +70,7 @@ class Map(object):
         self.length = 16
         self.rivals_on_board = []
         self.player = Player()
-        self.path_indexes = None #popraw tego typu bledy
+        self.path_indexes = None
         self.wall_indexes = None
 
     def create_path(self): #right order
@@ -153,7 +157,7 @@ class Interface(object):
         data.append("$: " + str(data_credits))
         data.append("Waves remining: ")
         data.append("~" * 15)
-        data.extend([i.name + ": (" + str(i.parameters[0] + 1) + ", " + str((i.parameters[1] - 1) / 2) + ")" for i in data_towers])
+        data.extend([i.name + ": (" + str(i.parameters[0] - 1) + ", " + str((i.parameters[1] - 1) / 2) + ")" for i in data_towers])
         data.append("~" * 15)
         data.append("Next wave: lives | credits")
         data.extend([i.name + ":\t" + str(i.score) + " | " + str(i.credits) for i in data_nextwave])
@@ -161,7 +165,7 @@ class Interface(object):
 
     @classmethod
     def sim(cls): #simulation
-        data = [] #widoczne jednostki przeciwnikow i ich suma trafien
+        data = []
         data.append("Active units: ")
         data.extend([r.name + ": " + str(r.score) for r in cls.map_.rivals_on_board])
         return data

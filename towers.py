@@ -11,7 +11,7 @@ class Tower(object):
         rival = field.content
         rival.shot()
 
-    def notify(self, field): #kazda wieza obseruje pola w swoim zasiegu
+    def notify(self, field):
         if self.airlyreach == field.content.airly:
             self.shoot(field)
             if not field.content.resistance:
@@ -26,7 +26,7 @@ class Fortress(Tower):
         self.name = "Fortress"
         self.parameters = (x,y)
         self.time = 1
-        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
+        self.reach = [(x-p, y+r) for p in (1, 0, -1) for r in (1, -1)]
         self.airlyreach = False
         self.effect = None
         self.board = map_
@@ -50,7 +50,7 @@ class Alkazar(Tower):
         self.name = "Alkazar"
         self.parameters = (x,y)
         self.time = 2
-        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
+        self.reach = [(x-p, y+r) for p in (1, 0, -1) for r in (1, -1)]
         self.airlyreach = False
         self.effect = None
         self.board = map_
@@ -61,12 +61,12 @@ class Alkazar(Tower):
         return
 
 
-class ArcherTower(Tower): # change the reach
+class ArcherTower(Tower):
     def __init__(self, x, y, map_):
         self.name = "Archer Tower"
         self.parameters = (x,y)
         self.time = 3
-        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
+        self.reach = [(x-p, y+r) for p in (2, 1, -1, -2) for r in (1, -1)]
         self.airlyreach = True
         self.effect = None
         self.board = map_
@@ -79,12 +79,12 @@ class ArcherTower(Tower): # change the reach
         simulator.add_event(t + 2, field.content.shot)
 
 
-class MagicTower(Tower): #change the reach
+class MagicTower(Tower):
     def __init__(self, x, y, map_):
         self.name = "Magic Tower"
         self.parameters = (x,y)
         self.time = 3
-        self.reach = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y+1), (x, y+1), (x+1, y+1)]
+        self.reach = [(x-p, y+r) for p in (2, 1, 0, -1, -2) for r in (1, -1)]
         self.airlyreach = True
         self.effect = None
         self.board = map_
@@ -102,50 +102,3 @@ class TowerFactory(object):
     @classmethod
     def create(cls, type_, x, y, map_):
         return cls.towers[type_](x, y, map_)
-
-
-class WrongValueError(Exception):
-    pass
-
-
-class BuildingPhase(object):
-    @staticmethod
-    def take_input(map_):
-        towertype  = raw_input("Please, choose a type of tower: ")
-        if towertype not in ["F", "A", "R", "M"]:
-            raise WrongValueError
-        column = int(raw_input("The column number: "))
-        if column not in range(map_.width):
-            raise WrongValueError
-        row = int(raw_input("The row number: "))
-        if row not in range(int(map_.length / 2)):
-            raise WrongValueError
-        return (towertype, column, row)
-
-    @classmethod
-    def set_tower(cls, map_):
-        print " F - Fortress (o), A - Alkazar (o), R - ArcherTower (f), M - MagicTower (f)"
-        print " [o - overground, f - flying] \n"
-        correct = False
-        while not correct:
-            try:
-                p = cls.take_input(map_)
-                correct = True
-            except WrongValueError:
-                print "Wrong Value"
-        scaledrow = p[2]*2 + 1
-        column = p[1]
-        towertype = p[0]
-        field = map_.get_field(column, scaledrow, "wall")
-        try:
-            tower = TowerFactory.create(towertype, column, scaledrow, map_)
-            Player.delete_credits(tower.value)
-            field.add_content(tower)
-            tower.observe_fields()
-            Player.add_tower(tower)
-        except Exception as e:
-            print "Unknown Error", e
-
-    @classmethod
-    def start(cls):
-        print "\nThis is a Building Phase. You can build your towers on the map.\n"

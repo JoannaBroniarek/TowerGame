@@ -5,24 +5,64 @@ from simulation import *
 import sys
 import time
 
-# co gdzie sie znajduje i jakie importy
-# czyszczenie mapy ze wszystkich przeciwnikow po bitwie
-"""
-for field in mapa.iter_path:
-    field.remove_content()
-"""
-# usun nieporzebne fragmenty kodu
-# ustaw rozne zasiegi
-# nie moga byc dwie wieze na jednym polu
-#cos jest nie tak z numeracja pol na mapie
+class WrongValueError(Exception):
+    pass
+
+class BuildingPhase(object):
+    @staticmethod
+    def take_input(map_):
+        towertype  = raw_input("Please, choose a type of tower: ")
+        if towertype not in ["F", "A", "R", "M"]:
+            raise WrongValueError
+        column = int(raw_input("The column number: "))
+        if column not in range(map_.width):
+            raise WrongValueError
+        row = int(raw_input("The row number: "))
+        if row not in range(int(map_.length / 2)):
+            raise WrongValueError
+        return (towertype, column, row)
+
+    @classmethod
+    def set_tower(cls, map_):
+        print " F - Fortress (o), A - Alkazar (o), R - ArcherTower (f), M - MagicTower (f)"
+        print " [o - overground, f - flying] \n"
+        correct = False
+        while not correct:
+            try:
+                p = cls.take_input(map_)
+                correct = True
+            except WrongValueError:
+                print "Wrong Value"
+        scaledrow = p[2]*2 + 1
+        column = p[1] + 1
+        towertype = p[0]
+        field = map_.get_field(column, scaledrow, "wall")
+        try:
+            tower = TowerFactory.create(towertype, column, scaledrow, map_)
+            field.check_content()
+            field.add_content(tower)
+            Player.delete_credits(tower.value)
+            tower.observe_fields()
+            Player.add_tower(tower)
+        except Exception as e:
+            print "\n\n\n You cannot build here! \n\n\n"
+
+    @classmethod
+    def start(cls):
+        print "\nThis is a Building Phase. You can build your towers on the map.\n"
+
 
 class Instruction(object):
     @staticmethod
     def help():
-        print "\nF - Fortress:\n -- kills mainly flying rivals\n -- the special effect 'shrapnels' gives a chance to kill flying rivals"
+        print "\n Towers: \n"
+        print "F - Fortress:\n -- kills mainly flying rivals\n -- the special effect 'shrapnels' gives a chance to kill flying rivals"
         print "A - Alkazar:\n -- kills only flying rivals\n -- there is no special effect"
         print "R - ArcherTower:\n -- kills only overland rivals\n -- the special effect 'poisonous arrows'"
         print "M - MagicTower:\n -- kills only overland rivals\n -- the special effect 'poleaxing'"
+        print "\n Rivals: \n"
+        print " -- flying: Paratrooper, Dragon"
+        print " -- overland: Knight, Viking, Speeder"
 
 class Cykl(object):
     game_active = True
@@ -44,34 +84,29 @@ class Cykl(object):
                     simulator = Simulator()
                     RivalWave.simulator = simulator
                     RivalWave.create(map_)
-                    inter.show(map_, "bp") ####
+                    inter.show(map_, "bp")
                     cls.counter += 1
                 BP.set_tower(map_)
-                inter.show(map_, "bp") ####
+                inter.show(map_, "bp")
             elif n == "B":
                 simulator.start()
                 RivalWave.generate(map_)
-                #RivalWave.create(map_)#the next wave
                 inter.show(map_, "sim")
                 try:
                     simulator.execute_all(map_, inter)
-                    inter.show(map_, "sim")
                 except Defeat:
                     Cykl.game_active = False
                     inter.show(map_, "sim")
-                    print "\n Game over \n"
+                    info = "\n Game over \n"
                 except Victory:
-                    print "\n You won the battle !!! \n"
+                    info = "\n You won the battle !!! \n"
                 finally:
                     cls.loops -= 1
                     cls.counter = 0
-                    rest = [e for e in simulator.queue if e[0] == simulator.now and e[0] == simulator.now + 1 ]
-                    print rest
-                    for r in rest:
-                        if "remove_content" in str(r[1]):
-                            r[1]()
+                    inter.show(map_, "sim")
                     map_.clear()
                     inter.show(map_, "sim")
+                    print info
 
 
 class InitialElements(object):

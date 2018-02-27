@@ -14,16 +14,12 @@ class Rival(object):
             RivalWave.simulator.delete_rival(self)
             self.map.player.add_credits(self.credits)
 
-    def go(self, t):
-        lastfield = None
+    def go(self, time):
         for field in self.map.iter_path():
-            RivalWave.simulator.add_event(t, field.add_content, self)
-            if lastfield is not None:
-                RivalWave.simulator.add_event(t, lastfield.remove_content)
-            lastfield = field
-            t += self.time
-        RivalWave.simulator.add_event(t, lastfield.remove_content)
-        RivalWave.simulator.add_event(t, lastfield.end)
+            RivalWave.simulator.add_event(time, field.add_content, self)
+            RivalWave.simulator.add_event(time + 1, field.remove_content)
+            time += self.time
+        RivalWave.simulator.add_event(time, field.end)
 
 
 class Paratrooper(Rival):
@@ -101,24 +97,26 @@ class RivalWave(object):
     simulator = None
     @classmethod
     def create(cls, map_): #algorithm of the rival wave creating
+        print cls.counter
         if cls.counter < 2:
             for i in range(1, randint(2,3)):
                 cls.wave.append(RivalFactory.create(choice(cls.airly + cls.groundbased), map_))
         elif cls.counter == 2 or cls.counter == 3:
             cls.wave.append(RivalFactory.create(choice(cls.airly), map_))
-            for i in range(3, randint(3, 5)):
+            for i in range(randint(3, 5)):
                 cls.wave.append(RivalFactory.create(choice(cls.groundbased), map_))
         else:
-            for i in range(2, randint(3, 6)):
+            for i in range(randint(3, 7)):
                 cls.wave.append(RivalFactory.create(choice(cls.airly), map_))
                 cls.wave.append(RivalFactory.create(choice(cls.groundbased), map_))
+        cls.counter += 1
 
     @classmethod
     def generate(cls, map_):
         time = cls.simulator.now
         wave = sorted(cls.wave, key=attrgetter('time'))
         for rival in wave:
-            print rival, time
+            print (rival, time)
             map_.add_rival(rival)
             rival.go(time)
             time += 2
