@@ -119,5 +119,5 @@ class RivalWave(object):
             print (rival, time)
             map_.add_rival(rival)
             rival.go(time)
-            time += 2
+            time += 5
         cls.wave = []

@@ -34,7 +34,7 @@ class BuildingPhase(object):
             except WrongValueError:
                 print "Wrong Value"
         scaledrow = p[2]*2 + 1
-        column = p[1] + 1
+        column = p[1]
         towertype = p[0]
         field = map_.get_field(column, scaledrow, "wall")
         try:

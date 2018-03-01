@@ -90,8 +90,8 @@ class Map(object):
 
     def create_wall(self): #right order
         self.wall_indexes = []
-        r1 = range(1, self.width)
-        r2 = list(reversed(range(0, self.width - 1)))
+        r1 = range(0, self.width - 1)
+        r2 = list(reversed(range(1, self.width)))
         for y in range(1, self.length + 1, 2):
             if y in range(1, self.length + 1, 4):
                 r = r1
