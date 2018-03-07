@@ -44,32 +44,11 @@ class Field(object):
         raise Defeat()
 
 
-class Player(object):
-    credits = 50
-    towers = []
-    @classmethod
-    def add_credits(cls, value):
-        cls.credits += value
-
-    @classmethod
-    def delete_credits(cls, value):
-        tmp = cls.credits - value
-        if tmp < 0:
-            raise Exception("\n\nYou do not have enought credits!!\nYou can start a battle. \n\n")
-        else:
-            cls.credits -= value
-
-    @classmethod
-    def add_tower(cls, tower):
-        cls.towers.append(tower)
-
-
 class Map(object):
     def __init__(self):
         self.width = 44
         self.length = 16
         self.rivals_on_board = []
-        self.player = Player()
         self.path_indexes = None
         self.wall_indexes = None
 
@@ -106,7 +85,7 @@ class Map(object):
             for field in d[where]:
                 if field.y == y and field.x == x:
                     return field
-        except ValueError: #zle - popraw
+        except ValueError:
             print "This field doesn`t exist."
 
     def iter_path(self):
@@ -148,16 +127,22 @@ class Map(object):
 
 
 class Interface(object):
+    game = None
+
+    @classmethod
+    def set_game(cls, game):
+        cls.game = game
+
     @classmethod
     def bp(cls): #building phase
-        data_credits = cls.map_.player.credits
-        data_towers = cls.map_.player.towers
+        data_credits = cls.game.credits
+        data_towers = cls.game.towers
         data_nextwave = RivalWave.wave
         data = []
         data.append("$: " + str(data_credits))
         data.append("Waves remining: ")
         data.append("~" * 15)
-        data.extend([i.name + ": (" + str(i.parameters[0] - 1) + ", " + str((i.parameters[1] - 1) / 2) + ")" for i in data_towers])
+        data.extend([i.name + ": (" + str(i.parameters[0]) + ", " + str((i.parameters[1] - 1) / 2) + ")" for i in data_towers])
         data.append("~" * 15)
         data.append("Next wave: lives | credits")
         data.extend([i.name + ":\t" + str(i.score) + " | " + str(i.credits) for i in data_nextwave])

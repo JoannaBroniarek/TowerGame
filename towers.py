@@ -1,5 +1,5 @@
 from abc import ABCMeta , abstractmethod
-from mapp import *
+from mapp import *  
 from random import randint
 
 class Tower(object):

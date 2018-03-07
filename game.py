@@ -9,6 +9,12 @@ class WrongValueError(Exception):
     pass
 
 class BuildingPhase(object):
+    game = None
+
+    @classmethod
+    def set_game(cls, game):
+        cls.game = game
+
     @staticmethod
     def take_input(map_):
         towertype  = raw_input("Please, choose a type of tower: ")
@@ -41,9 +47,9 @@ class BuildingPhase(object):
             tower = TowerFactory.create(towertype, column, scaledrow, map_)
             field.check_content()
             field.add_content(tower)
-            Player.delete_credits(tower.value)
+            game.delete_credits(tower.value)
             tower.observe_fields()
-            Player.add_tower(tower)
+            game.add_tower(tower)
         except Exception as e:
             print "\n\n\n You cannot build here! \n\n\n"
 
@@ -52,7 +58,11 @@ class BuildingPhase(object):
         print "\nThis is a Building Phase. You can build your towers on the map.\n"
 
 
-class Instruction(object):
+class Game(object):
+    def __init__(self):
+        self.credits = 50
+        self.towers = []
+
     @staticmethod
     def help():
         print "\n Towers: \n"
@@ -64,14 +74,46 @@ class Instruction(object):
         print " -- flying: Paratrooper, Dragon"
         print " -- overland: Knight, Viking, Speeder"
 
+    def set(self):
+        mapa = Map()
+        mapa.create_path()
+        mapa.create_wall()
+        inter = Interface()
+        inter.set_game(self)
+        BP = BuildingPhase()
+        BP.set_game(self)
+        Cykl()
+        Cykl.execute(mapa, inter, BP)
+
+    def add_credits(self, value):
+        self.credits += value
+
+    def delete_credits(self, value):
+        tmp = self.credits - value
+        if tmp < 0:
+            raise Exception("\n\nYou do not have enought credits!!\nYou can start a battle. \n\n")
+        else:
+            self.credits -= value
+
+    def add_tower(self, tower):
+        self.towers.append(tower)
+
+
 class Cykl(object):
     game_active = True
     counter = 0
     loops = 5   #number of simulations
     @classmethod
     def execute(cls, map_, inter, BP):
-        Instruction.help()
+        Game.help()
         while cls.game_active == True and cls.loops >= 0:
+            if cls.counter == 0 :
+                simulator = Simulator()
+                RivalWave.set_map(map_)
+                RivalWave.simulator = simulator
+                RivalWave.create()
+                inter.show(map_, "bp")
+                cls.counter += 1
             BP.start()
             print "\n\t T -> Build a Tower\tB -> Start a Battle\tQ -> Quit.\n"
             n = raw_input("\n\n T, Q or B ?: ")
@@ -80,18 +122,13 @@ class Cykl(object):
                 cls.game_active = False
                 print "The end"
             elif n == "T":
-                if cls.counter == 0 :
-                    simulator = Simulator()
-                    RivalWave.simulator = simulator
-                    RivalWave.create(map_)
-                    inter.show(map_, "bp")
-                    cls.counter += 1
                 BP.set_tower(map_)
                 inter.show(map_, "bp")
             elif n == "B":
                 simulator.start()
-                RivalWave.generate(map_)
+                RivalWave.generate()
                 inter.show(map_, "sim")
+                info = "Hmmmm"
                 try:
                     simulator.execute_all(map_, inter)
                 except Defeat:
@@ -109,21 +146,11 @@ class Cykl(object):
                     print info
 
 
-class InitialElements(object):
-    @staticmethod
-    def set():
-        mapa = Map()
-        mapa.create_path()
-        mapa.create_wall()
-        inter = Interface()
-        BP = BuildingPhase()
-        Cykl()
-        Cykl.execute(mapa, inter, BP)
-
 if __name__ == '__main__':
     print '\n' * 10
     print ("Welcome to the Tower Game\n\n" +
            "To make a play, hit enter\n\n" +
            "Have fun ;)\n\n")
     raw_input(".... (hit enter) ...")
-    InitialElements.set()
+    game = Game()
+    game.set()
