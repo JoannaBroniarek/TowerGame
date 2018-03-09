@@ -1,28 +1,31 @@
 from mapp import *
 from random import *
 from operator import attrgetter
-from game import *
+#from game import *
 import sys
+
 
 class Rival(object):
     def __str__(self):
         return self.sign
 
     def shot(self):
-        self.score -= 1
-        if self.score <= 0:
-            map_ = RivalWave.map_
-            map_.delete_rival(self)
-            RivalWave.simulator.delete_rival(self)
-            game.add_credits(self.credits)
+        if self.dead == False:
+            self.score -= 1
+            if self.score <= 0:
+                map_ = RivalWave.map_
+                map_.delete_rival(self)
+                self.dead = True
+                game.add_credits(self.credits)
 
     def go(self, time):
-        map_ = RivalWave.map_
-        for field in map_.iter_path():
-            RivalWave.simulator.add_event(time, field.add_content, self)
-            RivalWave.simulator.add_event(time + 1, field.remove_content)
-            time += self.time
-        RivalWave.simulator.add_event(time, field.end)
+        if self.dead == False:
+            map_ = RivalWave.map_
+            for field in map_.iter_path():
+                RivalWave.simulator.add_event(time, field.add_content, self)
+                RivalWave.simulator.add_event(time + 1, field.remove_content)
+                time += self.time
+            RivalWave.simulator.add_event(time, field.end)
 
 
 class Paratrooper(Rival):
@@ -34,6 +37,7 @@ class Paratrooper(Rival):
         self.airly = True
         self.resistance = False
         self.credits = 10
+        self.dead = False
 
 
 class Knight(Rival):
@@ -45,6 +49,7 @@ class Knight(Rival):
         self.airly = False
         self.resistance = False
         self.credits = 12
+        self.dead = False
 
 
 class Viking(Rival):
@@ -56,6 +61,7 @@ class Viking(Rival):
         self.airly = False
         self.resistance = True #resistant to special effects
         self.credits = 7
+        self.dead = False
 
 
 class Dragon(Rival):
@@ -67,6 +73,7 @@ class Dragon(Rival):
         self.airly = True
         self.resistance = False
         self.credits = 15
+        self.dead = False
 
 
 class Speeder(Rival):
@@ -78,6 +85,7 @@ class Speeder(Rival):
         self.resistance = False
         self.airly = False
         self.credits = 20
+        self.dead = False
 
 
 class RivalFactory(object):

@@ -41,12 +41,3 @@ class Simulator(object):
             sys.stdout.flush()
             self.execute(map_)
             interface.show(map_, "sim")
-        #rest_to_exec = [e for e in self.queue if t == self.now or t == self.now + 1]
-        #for t, event, args in rest_to_exec:
-        #    if len(args) == 0 and "remove" in str(event):
-        #        event()
-
-    def delete_rival(self, rival):
-        for e in self.queue:
-            if e[2] == rival:
-                self.queue.remove(e)

@@ -1,6 +1,6 @@
 from mapp import *
-from towers import *
 from rivals import *
+from towers import *
 from simulation import *
 import sys
 import time
@@ -66,10 +66,10 @@ class Game(object):
     @staticmethod
     def help():
         print "\n Towers: \n"
-        print "F - Fortress:\n -- kills mainly flying rivals\n -- the special effect 'shrapnels' gives a chance to kill flying rivals"
-        print "A - Alkazar:\n -- kills only flying rivals\n -- there is no special effect"
-        print "R - ArcherTower:\n -- kills only overland rivals\n -- the special effect 'poisonous arrows'"
-        print "M - MagicTower:\n -- kills only overland rivals\n -- the special effect 'poleaxing'"
+        print "F - Fortress:\n -- kills mainly overland rivals\n -- the special effect 'shrapnels' gives a chance to kill flying rivals"
+        print "A - Alkazar:\n -- kills only overland rivals\n -- there is no special effect"
+        print "R - ArcherTower:\n -- kills only flying rivals\n -- the special effect 'poisonous arrows'"
+        print "M - MagicTower:\n -- kills only flying rivals\n -- the special effect 'poleaxing'"
         print "\n Rivals: \n"
         print " -- flying: Paratrooper, Dragon"
         print " -- overland: Knight, Viking, Speeder"

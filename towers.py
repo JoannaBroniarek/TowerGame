@@ -1,5 +1,5 @@
 from abc import ABCMeta , abstractmethod
-from mapp import *  
+from mapp import *
 from random import randint
 
 class Tower(object):
@@ -15,10 +15,47 @@ class Tower(object):
         if self.airlyreach == field.content.airly:
             self.shoot(field)
             if not field.content.resistance:
-                self.produce_effect(field, RivalWave.simulator)
+                self.effect().produce(field, RivalWave.simulator)
 
     def __str__(self):
         return self.sign
+
+
+class Effect(object):
+    def produce(self, field, simulator):
+        raise NotImplementedError
+
+
+class Effect1(object):#bron odlamkowa
+    def produce(self, field, simulator):
+        try:
+            ind = field.map.rivals_on_board.index(field.content)
+            t = simulator.now
+            if ind > 0:
+                simulator.add_event(t, field.map.rivals_on_board[ind - 1].shot)
+            if ind < len(field.map.rivals_on_board) - 1:
+                simulator.add_event(t, field.map.rivals_on_board[ind + 1].shot)
+        except:
+            pass
+
+
+class Effect2(object):
+    def produce(self, field, simulator):
+        return
+
+
+class Effect3(object):
+    def produce(self, field, simulator): #zatrute strzaly
+        t = simulator.now
+        simulator.add_event(t + 1, field.content.shot)
+        simulator.add_event(t + 2, field.content.shot)
+
+
+class Effect4(object):
+    def produce(self, field, simulator): #bron ogluszajaca
+        for event in simulator.queue:
+            if event[2] == field.content:
+                event[0] += 1
 
 
 class Fortress(Tower):
@@ -28,21 +65,10 @@ class Fortress(Tower):
         self.time = 1
         self.reach = [(x-p, y+r) for p in (1, 0, -1) for r in (1, -1)]
         self.airlyreach = False
-        self.effect = None
+        self.effect = Effect1
         self.board = map_
         self.sign = "F"
         self.value = 4
-
-    def produce_effect(self, field, simulator):#bron odlamkowa, dostaje nawet ten latajacy
-        try:
-            ind = self.board.rivals_on_board.index(field.content)
-            t = simulator.now
-            if ind > 0:
-                simulator.add_event(t, self.board.rivals_on_board[ind - 1].shot)
-            if ind < len(self.board.rivals_on_board) - 1:
-                simulator.add_event(t, self.board.rivals_on_board[ind + 1].shot)
-        except:
-            pass
 
 
 class Alkazar(Tower):
@@ -52,13 +78,10 @@ class Alkazar(Tower):
         self.time = 2
         self.reach = [(x-p, y+r) for p in (1, 0, -1) for r in (1, -1)]
         self.airlyreach = False
-        self.effect = None
+        self.effect = Effect2
         self.board = map_
         self.sign = "A"
         self.value = 4
-
-    def produce_effect(self, field, simulator):
-        return
 
 
 class ArcherTower(Tower):
@@ -68,15 +91,10 @@ class ArcherTower(Tower):
         self.time = 3
         self.reach = [(x-p, y+r) for p in (2, 1, -1, -2) for r in (1, -1)]
         self.airlyreach = True
-        self.effect = None
+        self.effect = Effect3
         self.board = map_
         self.sign = "R"
         self.value = 4
-
-    def produce_effect(self, field, simulator): #zatrute strzaly
-        t = simulator.now
-        simulator.add_event(t + 1, field.content.shot)
-        simulator.add_event(t + 2, field.content.shot)
 
 
 class MagicTower(Tower):
@@ -86,15 +104,10 @@ class MagicTower(Tower):
         self.time = 3
         self.reach = [(x-p, y+r) for p in (2, 1, 0, -1, -2) for r in (1, -1)]
         self.airlyreach = True
-        self.effect = None
+        self.effect = Effect4
         self.board = map_
         self.sign = "M"
         self.value = 4
-
-    def produce_effect(self, field, simulator): #bron ogluszajaca
-        for event in simulator.queue:
-            if event[2] == field.content:
-                event[0] += 1
 
 
 class TowerFactory(object):
