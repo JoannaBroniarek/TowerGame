@@ -39,20 +39,20 @@ class Effect1(object):#bron odlamkowa
             pass
 
 
-class Effect2(object):
+class Effect2(object):#brak efektu
     def produce(self, field, simulator):
         return
 
 
-class Effect3(object):
-    def produce(self, field, simulator): #zatrute strzaly
+class Effect3(object):#zatrute strzaly
+    def produce(self, field, simulator):
         t = simulator.now
         simulator.add_event(t + 1, field.content.shot)
         simulator.add_event(t + 2, field.content.shot)
 
 
-class Effect4(object):
-    def produce(self, field, simulator): #bron ogluszajaca
+class Effect4(object):#bron ogluszajaca
+    def produce(self, field, simulator):
         for event in simulator.queue:
             if event[2] == field.content:
                 event[0] += 1

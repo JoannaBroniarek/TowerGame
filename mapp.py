@@ -42,7 +42,6 @@ class Field(object):
 
     def end(self, rival):
         if rival.dead == False:
-            print "tu byl end"
             raise Defeat()
 
 

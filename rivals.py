@@ -1,7 +1,6 @@
 from mapp import *
 from random import *
 from operator import attrgetter
-#from game import *
 import sys
 
 
