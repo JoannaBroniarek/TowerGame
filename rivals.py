@@ -16,16 +16,15 @@ class Rival(object):
                 map_ = RivalWave.map_
                 map_.delete_rival(self)
                 self.dead = True
-                game.add_credits(self.credits)
+                RivalWave.game.add_credits(self.credits)
 
     def go(self, time):
-        if self.dead == False:
-            map_ = RivalWave.map_
-            for field in map_.iter_path():
-                RivalWave.simulator.add_event(time, field.add_content, self)
-                RivalWave.simulator.add_event(time + 1, field.remove_content)
-                time += self.time
-            RivalWave.simulator.add_event(time, field.end)
+        map_ = RivalWave.map_
+        for field in map_.iter_path():
+            RivalWave.simulator.add_event(time, field.add_content, self)
+            RivalWave.simulator.add_event(time + 1, field.remove_content)
+            time += self.time
+        RivalWave.simulator.add_event(time, field.end, self)
 
 
 class Paratrooper(Rival):
@@ -56,8 +55,8 @@ class Viking(Rival):
     def __init__(self):
         self.name = "Viking"
         self.sign = "V"
-        self.score = 15
-        self.time = 5
+        self.score = 10
+        self.time = 4
         self.airly = False
         self.resistance = True #resistant to special effects
         self.credits = 7
@@ -102,6 +101,7 @@ class RivalWave(object):
     wave = []
     simulator = None
     map_ = None
+    game = None
     @classmethod
     def create(cls): #algorithm of the rival wave creating
         print cls.counter
@@ -126,9 +126,13 @@ class RivalWave(object):
             print (rival, time)
             cls.map_.add_rival(rival)
             rival.go(time)
-            time += 5
+            time += 7
         cls.wave = []
 
     @classmethod
     def set_map(cls, map_):
         cls.map_ = map_
+
+    @classmethod
+    def set_game(cls, game):
+        cls.game = game

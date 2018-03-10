@@ -40,8 +40,10 @@ class Field(object):
         if type(self.content) != type(None):
             raise Exception
 
-    def end(self):
-        raise Defeat()
+    def end(self, rival):
+        if rival.dead == False:
+            print "tu byl end"
+            raise Defeat()
 
 
 class Map(object):

@@ -83,7 +83,7 @@ class Game(object):
         BP = BuildingPhase()
         BP.set_game(self)
         Cykl()
-        Cykl.execute(mapa, inter, BP)
+        Cykl.execute(mapa, inter, BP, self)
 
     def add_credits(self, value):
         self.credits += value
@@ -104,12 +104,13 @@ class Cykl(object):
     counter = 0
     loops = 5   #number of simulations
     @classmethod
-    def execute(cls, map_, inter, BP):
-        Game.help()
+    def execute(cls, map_, inter, BP, game):
+        game.help()
         while cls.game_active == True and cls.loops >= 0:
             if cls.counter == 0 :
                 simulator = Simulator()
                 RivalWave.set_map(map_)
+                RivalWave.set_game(game)
                 RivalWave.simulator = simulator
                 RivalWave.create()
                 inter.show(map_, "bp")

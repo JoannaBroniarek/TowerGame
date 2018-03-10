@@ -26,10 +26,10 @@ class Simulator(object):
         self.now, event, args = heappop(self.queue)
         if not map_.rivals_on_board :
             raise Victory()
-        elif not self.queue:
-            raise Defeat()
+        #elif not self.queue:
+        #    raise Defeat()
         elif len(args) > 0 and args[0] not in map_.rivals_on_board and isinstance(args[0], Rival):
-            pass
+            return
         else:
             event(*args)
 
