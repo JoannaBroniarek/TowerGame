@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 24 11:26:59 2018
-@author: Asia
-"""
 from simulation import *
 from operator import attrgetter
 from math import ceil
@@ -22,10 +17,12 @@ class Field(object):
             return "%s"%(str(self.content.sign))
         return self.sign
 
-    def add_content(self, content):
+    def add_content(self, content, *simulator):
+        if isinstance(content, Rival) and content.dead == True:
+            return
         self.content = content
         if len(self.observers)!=0:
-            map(lambda x: self.notify(x), self.observers)
+            map(lambda x: self.notify(x, simulator[0]), self.observers)
 
     def remove_content(self):
         self.content = None
@@ -33,8 +30,8 @@ class Field(object):
     def add_observer(self, observer):
         self.observers.append(observer)
 
-    def notify(self, observer):
-        observer.notify(self)
+    def notify(self, observer, simulator):
+        observer.notify(self, simulator)
 
     def check_content(self):
         if type(self.content) != type(None):
@@ -42,16 +39,18 @@ class Field(object):
 
     def end(self, rival):
         if rival.dead == False:
-            raise Defeat()
+            self.map.simulator.add_event(self.map.simulator.now, self.map.game.defeat)
 
 
 class Map(object):
-    def __init__(self):
+    def __init__(self, game):
         self.width = 44
         self.length = 16
         self.rivals_on_board = []
         self.path_indexes = None
         self.wall_indexes = None
+        self.game = game
+        self.simulator = None
 
     def create_path(self): #right order
         self.path_indexes = []
@@ -80,6 +79,9 @@ class Map(object):
                 self.wall_indexes.append((x,y))
         self.wall = [Field(x, y, "#", self) for (x,y) in self.wall_indexes]
 
+    def set_simulator(self, simulator):
+        self.simulator = simulator
+
     def get_field(self, x, y, where): #get an appropriate field from the wall fields
         d = {"path" : self.path, "wall" : self.wall}
         try:
@@ -103,6 +105,9 @@ class Map(object):
         for r in tmp:
             if r == rival:
                 self.rivals_on_board.remove(r)
+        if not self.rivals_on_board:
+            self.simulator.add_event(self.simulator.now, self.game.victory)
+
     def clear(self):
         for field in self.iter_path():
             field.remove_content()
@@ -128,16 +133,19 @@ class Map(object):
 
 
 class Interface(object):
-    game = None
+    def __init__(self):
+        self.game = None
+        self.map = None
 
-    @classmethod
-    def set_game(cls, game):
-        cls.game = game
+    def set_game(self, game):
+        self.game = game
 
-    @classmethod
-    def bp(cls): #building phase
-        data_credits = cls.game.credits
-        data_towers = cls.game.towers
+    def set_map(self, map_):
+        self.map = map_
+
+    def bp(self): #building phase
+        data_credits = self.game.credits
+        data_towers = self.game.towers
         data_nextwave = RivalWave.wave
         data = []
         data.append("$: " + str(data_credits))
@@ -149,18 +157,15 @@ class Interface(object):
         data.extend([i.name + ":\t" + str(i.score) + " | " + str(i.credits) for i in data_nextwave])
         return data
 
-    @classmethod
-    def sim(cls): #simulation
+    def sim(self): #simulation
         data = []
         data.append("Active units: ")
-        data.extend([r.name + ": " + str(r.score) for r in cls.map_.rivals_on_board])
+        data.extend([r.name + ": " + str(r.score) for r in self.map.rivals_on_board])
         return data
 
-    @classmethod
-    def show(cls, map_, phase, *arg):
-        cls.map_ = map_
-        d = {"bp": cls.bp, "sim": cls.sim}
-        lines = str(cls.map_).split('\n')
+    def show(self, phase, *arg):
+        d = {"bp": self.bp, "sim": self.sim}
+        lines = str(self.map).split('\n')
         data = d[phase](*arg)
         zipped = (pair for pair in izip_longest(lines,data))
         result = "\n".join(["{} {}".format(*[" " if x is None else x for x in i]) for i in zipped])

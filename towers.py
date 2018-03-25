@@ -11,11 +11,11 @@ class Tower(object):
         rival = field.content
         rival.shot()
 
-    def notify(self, field):
+    def notify(self, field, simulator):
         if self.airlyreach == field.content.airly:
             self.shoot(field)
             if not field.content.resistance:
-                self.effect().produce(field, RivalWave.simulator)
+                self.effect().produce(field, simulator)
 
     def __str__(self):
         return self.sign
@@ -53,6 +53,8 @@ class Effect3(object):#zatrute strzaly
 
 class Effect4(object):#bron ogluszajaca
     def produce(self, field, simulator):
+        print type(simulator) #####
+        print simulator
         for event in simulator.queue:
             if event[2] == field.content:
                 event[0] += 1

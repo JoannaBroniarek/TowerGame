@@ -4,16 +4,17 @@ from towers import *
 from simulation import *
 import sys
 import time
+import traceback
 
 class WrongValueError(Exception):
     pass
 
 class BuildingPhase(object):
-    game = None
+    def __init__(self):
+        self.game = None
 
-    @classmethod
-    def set_game(cls, game):
-        cls.game = game
+    def set_game(self, game):
+        self.game = game
 
     @staticmethod
     def take_input(map_):
@@ -28,14 +29,13 @@ class BuildingPhase(object):
             raise WrongValueError
         return (towertype, column, row)
 
-    @classmethod
-    def set_tower(cls, map_):
+    def set_tower(self, map_):
         print " F - Fortress (o), A - Alkazar (o), R - ArcherTower (f), M - MagicTower (f)"
         print " [o - overground, f - flying] \n"
         correct = False
         while not correct:
             try:
-                p = cls.take_input(map_)
+                p = self.take_input(map_)
                 correct = True
             except WrongValueError:
                 print "Wrong Value"
@@ -53,10 +53,16 @@ class BuildingPhase(object):
         except Exception as e:
             print "\n\n\n You cannot build here! \n\n\n"
 
-    @classmethod
-    def start(cls):
+    @staticmethod
+    def start():
         print "\nThis is a Building Phase. You can build your towers on the map.\n"
 
+
+class Victory(Exception):
+    pass
+
+class Defeat(Exception):
+    pass
 
 class Game(object):
     def __init__(self):
@@ -75,15 +81,16 @@ class Game(object):
         print " -- overland: Knight, Viking, Speeder"
 
     def set(self):
-        mapa = Map()
+        mapa = Map(self)
         mapa.create_path()
         mapa.create_wall()
         inter = Interface()
         inter.set_game(self)
-        BP = BuildingPhase()
-        BP.set_game(self)
+        inter.set_map(mapa)
+        bp = BuildingPhase()
+        bp.set_game(self)
         Cykl()
-        Cykl.execute(mapa, inter, BP, self)
+        Cykl.execute(mapa, inter, bp, self)
 
     def add_credits(self, value):
         self.credits += value
@@ -98,24 +105,32 @@ class Game(object):
     def add_tower(self, tower):
         self.towers.append(tower)
 
+    @staticmethod
+    def victory():
+        raise Victory()
+
+    @staticmethod
+    def defeat():
+        raise Defeat()
 
 class Cykl(object):
     game_active = True
     counter = 0
     loops = 5   #number of simulations
     @classmethod
-    def execute(cls, map_, inter, BP, game):
+    def execute(cls, map_, inter, bp, game):
         game.help()
         while cls.game_active == True and cls.loops >= 0:
             if cls.counter == 0 :
                 simulator = Simulator()
+                map_.set_simulator(simulator)
                 RivalWave.set_map(map_)
                 RivalWave.set_game(game)
                 RivalWave.simulator = simulator
                 RivalWave.create()
-                inter.show(map_, "bp")
+                inter.show("bp")
                 cls.counter += 1
-            BP.start()
+            bp.start()
             print "\n\t T -> Build a Tower\tB -> Start a Battle\tQ -> Quit.\n"
             n = raw_input("\n\n T, Q or B ?: ")
             print
@@ -123,27 +138,28 @@ class Cykl(object):
                 cls.game_active = False
                 print "The end"
             elif n == "T":
-                BP.set_tower(map_)
-                inter.show(map_, "bp")
+                bp.set_tower(map_)
+                inter.show("bp")
             elif n == "B":
                 simulator.start()
                 RivalWave.generate()
-                inter.show(map_, "sim")
-                info = "Hmmmm"
+                inter.show("sim")
+                info = "error"
                 try:
-                    simulator.execute_all(map_, inter)
+                    simulator.execute_all(inter)
                 except Defeat:
                     Cykl.game_active = False
-                    inter.show(map_, "sim")
+                    inter.show("sim")
                     info = "\n Game over \n"
                 except Victory:
                     info = "\n You won the battle !!! \n"
+                except: traceback.print_exc()
                 finally:
                     cls.loops -= 1
                     cls.counter = 0
-                    inter.show(map_, "sim")
+                    inter.show("sim")
                     map_.clear()
-                    inter.show(map_, "sim")
+                    inter.show("sim")
                     print info
 
 

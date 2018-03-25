@@ -9,21 +9,14 @@ class Rival(object):
         return self.sign
 
     def shot(self):
-        if self.dead == False:
-            self.score -= 1
-            if self.score <= 0:
-                map_ = RivalWave.map_
-                map_.delete_rival(self)
-                self.dead = True
-                RivalWave.game.add_credits(self.credits)
-
-    def go(self, time):
-        map_ = RivalWave.map_
-        for field in map_.iter_path():
-            RivalWave.simulator.add_event(time, field.add_content, self)
-            RivalWave.simulator.add_event(time + 1, field.remove_content)
-            time += self.time
-        RivalWave.simulator.add_event(time, field.end, self)
+        if self.dead:
+            return
+        self.score -= 1
+        if self.score <= 0:
+            map_ = RivalWave.map_
+            map_.delete_rival(self)
+            self.dead = True
+            RivalWave.game.add_credits(self.credits)
 
 
 class Paratrooper(Rival):
@@ -118,13 +111,21 @@ class RivalWave(object):
         cls.counter += 1
 
     @classmethod
+    def go(cls, time, rival):
+        for field in cls.map_.iter_path():
+            cls.simulator.add_event(time, field.add_content, rival, cls.simulator)
+            cls.simulator.add_event(time + 1, field.remove_content)
+            time += rival.time
+        cls.simulator.add_event(time, field.end, rival)
+
+    @classmethod
     def generate(cls):
         time = cls.simulator.now
         wave = sorted(cls.wave, key=attrgetter('time'))
         for rival in wave:
             print (rival, time)
             cls.map_.add_rival(rival)
-            rival.go(time)
+            cls.go(time, rival)
             time += 7
         cls.wave = []
 
