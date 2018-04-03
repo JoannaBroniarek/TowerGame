@@ -68,6 +68,7 @@ class Game(object):
     def __init__(self):
         self.credits = 50
         self.towers = []
+        self.map = None
 
     @staticmethod
     def help():
@@ -84,6 +85,7 @@ class Game(object):
         mapa = Map(self)
         mapa.create_path()
         mapa.create_wall()
+        self.map = mapa
         inter = Interface()
         inter.set_game(self)
         inter.set_map(mapa)
@@ -104,6 +106,11 @@ class Game(object):
 
     def add_tower(self, tower):
         self.towers.append(tower)
+##
+    def rival_end(self, rival):
+        if rival.dead == False:
+            self.map.simulator.add_event(self.map.simulator.now, self.defeat)
+
 
     @staticmethod
     def victory():

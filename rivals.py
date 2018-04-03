@@ -116,7 +116,8 @@ class RivalWave(object):
             cls.simulator.add_event(time, field.add_content, rival, cls.simulator)
             cls.simulator.add_event(time + 1, field.remove_content)
             time += rival.time
-        cls.simulator.add_event(time, field.end, rival)
+        cls.simulator.add_event(time, cls.game.rival_end, rival)
+        #cls.simulator.add_event(time, field.end, rival)
 
     @classmethod
     def generate(cls):

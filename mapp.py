@@ -37,9 +37,9 @@ class Field(object):
         if type(self.content) != type(None):
             raise Exception
 
-    def end(self, rival):
-        if rival.dead == False:
-            self.map.simulator.add_event(self.map.simulator.now, self.map.game.defeat)
+    #def end(self, rival):
+    #    if rival.dead == False:
+    #        self.map.simulator.add_event(self.map.simulator.now, self.map.game.defeat)
 
 
 class Map(object):
