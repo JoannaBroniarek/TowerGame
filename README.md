@@ -1,9 +1,11 @@
-# TowerGame
+# Tower Game
 
-The Tower Game is run in the console.
+Project within the scope of the subject "Designing and object-oriented programming". The repository contains the implementation of the game "Tower Game" which is run from the console.
+The aim of the project was to use various design patterns in Python.
 
-python version --> Python 2.7
+------------------------------------
+To start the game, run "game.py" file in the console. 
+Have fun! :) 
 
-To start the game, run "game.py" file. 
-
-Have fun! :)
+--------------------------------
+Python version:  Python 2.7
