@@ -5,7 +5,10 @@ The aim of the project was to use various design patterns in Python.
 The whole code was written by me.
 
 ------------------------------------
-To start the game, run "game.py" file in the console. 
+To start the game, run in the console:
+```
+python game.py
+```
 Have fun! :) 
 
 --------------------------------
