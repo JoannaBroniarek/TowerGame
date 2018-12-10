@@ -1,6 +1,9 @@
 # Tower Game
+Joanna Broniarek
 
-Project within the scope of the subject **"Designing and object-oriented programming"**. 
+### Project within the scope of the subject **"Designing and object-oriented programming"**. 
+
+![Image maps](map_photo.png)
 
 The repository contains the implementation of the game "Tower Game" which is run from the console.
 The aim of the project was to use various design patterns in Python.
