@@ -16,8 +16,11 @@ Have fun! :)
 
 Contain
 -----------------------------------
-+ game.py - which is the main file
-+ 
++ game.py - which is the main file to initialise the game
++ mapp.py
++ rivals.py
++ simulation.py
++ towers.py
 
 Technology
 --------------------------------
