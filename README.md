@@ -8,9 +8,9 @@ The repository contains the implementation of the game "Tower Game" which is run
 The aim of the project was to use various design patterns in Python.
 The whole code was written by me.
 
-Contain
+File structure
 -----------------------------------
-+ game.py - which is the main file to initialise the game
++ game.py - this is the main file to initialise the game
 + mapp.py
 + rivals.py
 + simulation.py
