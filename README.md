@@ -1,7 +1,6 @@
 # Tower Game
+## Project within the scope of the subject **"Designing and object-oriented programming"**. 
 Joanna Broniarek
-
-### Project within the scope of the subject **"Designing and object-oriented programming"**. 
 
 ![Image maps](map_photo.png)
 
